@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Genres
+from reviews.models import Genres
 from reviews.models import User
 
 

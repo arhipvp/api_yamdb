@@ -45,3 +45,17 @@ class User(AbstractUser):
     @property
     def confirmation_code(self):
         return hashlib.md5(self.username.encode()).hexdigest()
+
+
+class Genres(models.Model):
+    name = models.CharField(
+        max_length=128,
+        unique=True,
+        blank=False,
+        verbose_name='Жанр',
+    )
+    slug = models.SlugField(
+        unique=True,
+        blank=True,
+        max_length=50,
+    )

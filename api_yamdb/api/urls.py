@@ -10,5 +10,4 @@ urlpatterns = [
     path('', include(router.urls)),
     path('v1/auth/signup/', AuthSignup.as_view(), name='signup'),
     path('v1/auth/token/', AuthToken.as_view(), name='token'),
-
 ]

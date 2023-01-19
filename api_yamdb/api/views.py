@@ -1,14 +1,13 @@
 from django.core.mail import send_mail
 
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
-from rest_framework import filters, status
+from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Genres
+from reviews.models import Genres
 from .serializers import AuthSignupSerializer, AuthTokenSerializer, \
     GenresSerializer, UsersSerializer
 from reviews.models import User

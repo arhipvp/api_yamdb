@@ -1,6 +1,7 @@
+import hashlib
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
 
 USER = 'user'
 MODERATOR = 'moderator'
@@ -25,12 +26,6 @@ class User(AbstractUser):
         default=USER,
         max_length=10
     )
-    confirmation_code = models.CharField(
-        max_length=255,
-        null=True,
-        blank=False,
-        default='-'
-    )
 
     def __str__(self):
         return self.username
@@ -46,3 +41,7 @@ class User(AbstractUser):
     @property
     def is_moderator(self):
         return self.role == MODERATOR
+
+    @property
+    def confirmation_code(self):
+        return hashlib.md5(self.username.encode()).hexdigest()

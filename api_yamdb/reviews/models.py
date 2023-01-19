@@ -80,6 +80,7 @@ class Title(models.Model):
     )
     year = models.IntegerField()
     description = models.TextField()
+    genre = models.ManyToManyField(Genres)
     category = models.ForeignKey(
         Сategories,
         on_delete=models.SET_NULL,

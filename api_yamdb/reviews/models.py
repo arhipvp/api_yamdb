@@ -59,3 +59,31 @@ class Genres(models.Model):
         blank=True,
         max_length=50,
     )
+
+class Сategories(models.Model):
+    name = models.CharField(
+        max_length=256,
+        null=False,
+        blank=False,
+    )
+    slug = models.SlugField(
+        max_length=50,
+        unique=True,
+    )
+
+
+class Title(models.Model):
+    name = models.CharField(
+        max_length=256,
+        blank=False,
+        null=False,
+    )
+    year = models.IntegerField()
+    description = models.TextField()
+    genre = models.ManyToManyField(Genres)
+    category = models.ForeignKey(
+        Сategories,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='category',
+    )

@@ -25,6 +25,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     
     
+    
 class СategoriesViewSet(viewsets.ModelViewSet):
     queryset = Сategories.objects.all()
     serializer_class = СategoriesSerializer

@@ -1,9 +1,11 @@
 import hashlib
 
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.core.exceptions import ValidationError
 from .validations import ValidateYear
+from django.db.models import UniqueConstraint
 
 USER = 'user'
 MODERATOR = 'moderator'
@@ -62,6 +64,7 @@ class Genres(models.Model):
         max_length=50,
     )
 
+
 class Сategories(models.Model):
     name = models.CharField(
         max_length=256,
@@ -91,3 +94,56 @@ class Title(models.Model):
         null=True,
         related_name='category',
     )
+
+
+class Review(models.Model):
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+    )
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+    )
+    text = models.TextField()
+    pub_date = models.DateTimeField(
+        'Дата публикации',
+        auto_now_add=True,
+        db_index=True,
+    )
+    score = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+
+    class Meta:
+        UniqueConstraint(
+            fields=['author', 'title'],
+            name='unique_review',
+        )
+
+    def __str__(self) -> str:
+        return self.text
+
+
+class Comment(models.Model):
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='comments',
+    )
+    review = models.ForeignKey(
+        Review,
+        on_delete=models.CASCADE,
+        related_name='comments',
+    )
+    text = models.TextField()
+    pub_date = models.DateTimeField(
+        'Дата публикации',
+        auto_now_add=True,
+        db_index=True,
+    )
+
+    def __str__(self) -> str:
+        return self.text

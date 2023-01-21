@@ -17,11 +17,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         return obj.owner == request.user
     
 class IsAdminOrReadOnly(permissions.BasePermission):
-    """
-    Права админа или только на чтение
-    """
-    def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        
-        return request.user.role == ADMIN
+    def has_permission(self, request, view):
+        return (request.method in permissions.SAFE_METHODS
+                or (request.user.is_authenticated and (
+                    request.user.is_admin or request.user.is_superuser)))

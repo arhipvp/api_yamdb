@@ -2,6 +2,8 @@ import hashlib
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.exceptions import ValidationError
+from .validations import ValidateYear
 
 USER = 'user'
 MODERATOR = 'moderator'
@@ -78,12 +80,14 @@ class Title(models.Model):
         blank=False,
         null=False,
     )
-    year = models.IntegerField()
+    year = models.IntegerField(
+        #validators=[ValidateYear]
+    )
     description = models.TextField()
-    genre = models.ManyToManyField(Genres)
+    genre = models.ManyToManyField(Genres, related_name='genres')
     category = models.ForeignKey(
         Сategories,
         on_delete=models.SET_NULL,
         null=True,
-        verbose_name='category',
+        related_name='category',
     )

@@ -2,6 +2,7 @@ from django.core.mail import send_mail
 
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -28,7 +29,9 @@ class AuthSignup(APIView):
     def post(request):
         serializer = AuthSignupSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+        user, created = User.objects.get_or_create(
+            username=serializer.data['username'], email=serializer.data['email']
+        )
         send_mail(
             'Код подтверждения для yamdb',
             f'Ваш код подтверждения - {user.confirmation_code}',
@@ -63,3 +66,21 @@ class UsersViewSet(viewsets.ModelViewSet):
     serializer_class = UsersSerializer
     permission_classes = (IsAuthenticated,)
     lookup_field = 'username'
+
+    @action(
+        methods=['GET', 'PATCH'],
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+        url_path='me')
+    def me_actions(self, request):
+        ''' Получить/Обновить свои данные'''
+        if request.method == 'GET':
+            serializer = UsersSerializer(request.user)
+            return Response(serializer.data)
+
+        serializer = UsersSerializer(
+            request.user, data=request.data, partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save(role=request.user.role)
+        return Response(serializer.data)

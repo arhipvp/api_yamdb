@@ -1,5 +1,14 @@
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import (IsAdminUser, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from reviews.models import Genres, Title, User, Сategories
 from django.http import HttpRequest
 from django.db.models import QuerySet
 from rest_framework import status, viewsets
@@ -14,23 +23,39 @@ from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
                           СategoriesSerializer, ReviewsSerializer, CommentsSerializer)
 
 from .permissions import IsAdminOrReadOnly
+from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
+                          GenresSerializer, ReadOnlyTitleSerializer,
+                          TitleSerializer, UsersSerializer,
+                          СategoriesSerializer)
+
 
 
 class GenresViewSet(viewsets.ModelViewSet):
     queryset = Genres.objects.all()
     serializer_class = GenresSerializer
+    permission_classes = (IsAdminOrReadOnly, )
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', )
     lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
+    def get_serializer_class(self):
+        if self.action in ('retrieve', 'list'):
+            return ReadOnlyTitleSerializer
+        return TitleSerializer
+    
+    
+    
 
 
 class СategoriesViewSet(viewsets.ModelViewSet):
     queryset = Сategories.objects.all()
     serializer_class = СategoriesSerializer
-    search_fields = 'name'
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', )
     lookup_field = 'slug'
     permission_classes = (IsAuthenticatedOrReadOnly, )
 

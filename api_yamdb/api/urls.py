@@ -1,4 +1,4 @@
-from api.views import AuthSignup, AuthToken, СategoriesViewSet, GenresViewSet, UsersViewSet, TitleViewSet
+from api.views import AuthSignup, AuthToken, СategoriesViewSet, GenresViewSet, UsersViewSet, TitleViewSet, ReviewsViewSet, CommentsViewSet
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
@@ -7,6 +7,16 @@ router.register('v1/genres', GenresViewSet)
 router.register('v1/users', UsersViewSet, basename='users')
 router.register('v1/titles', TitleViewSet)
 router.register('v1/categories', СategoriesViewSet)
+router.register(
+    'v1/titles/(?P<title_id>[0-9]+)/reviews',
+    ReviewsViewSet,
+    basename='Review',
+)
+router.register(
+    'v1/titles/(?P<title_id>[0-9]+)/reviews/(?P<review_id>[0-9]+)/comments',
+    CommentsViewSet,
+    basename='Comment',
+)
 
 
 urlpatterns = [

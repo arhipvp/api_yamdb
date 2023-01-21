@@ -1,30 +1,32 @@
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from django.http import HttpRequest
+from django.db.models import QuerySet
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from reviews.models import Genres, Title, User, Сategories
+from reviews.models import Genres, Title, User, Сategories, Review, Comment
 from rest_framework.decorators import action
 from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
                           GenresSerializer, TitleSerializer, UsersSerializer,
-                          СategoriesSerializer)
+                          СategoriesSerializer, ReviewsSerializer, CommentsSerializer)
 
 from .permissions import IsAdminOrReadOnly
+
 
 class GenresViewSet(viewsets.ModelViewSet):
     queryset = Genres.objects.all()
     serializer_class = GenresSerializer
     lookup_field = 'slug'
-    
-    
+
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    
-    
+
+
 class СategoriesViewSet(viewsets.ModelViewSet):
     queryset = Сategories.objects.all()
     serializer_class = СategoriesSerializer
@@ -32,10 +34,6 @@ class СategoriesViewSet(viewsets.ModelViewSet):
     lookup_field = 'slug'
     permission_classes = (IsAuthenticatedOrReadOnly, )
 
-
-        
-
-    
 
 class AuthSignup(APIView):
     """
@@ -81,3 +79,25 @@ class UsersViewSet(viewsets.ModelViewSet):
     serializer_class = UsersSerializer
     permission_classes = (IsAuthenticated,)
     lookup_field = 'username'
+
+
+class ReviewsViewSet(viewsets.ModelViewSet):
+    serializer_class = ReviewsSerializer
+
+    def get_title(self, request: HttpRequest) -> Title:
+        del request
+        return get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+
+    def get_queryset(self) -> QuerySet:
+        return self.get_title(self).reviews.select_related('title')
+
+
+class CommentsViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentsSerializer
+
+    def get_review(self, request: HttpRequest) -> Title:
+        del request
+        return get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+
+    def get_queryset(self) -> QuerySet:
+        return self.get_review(self).comments.select_related('review')

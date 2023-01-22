@@ -3,88 +3,190 @@ platform win32 -- Python 3.7.0, pytest-6.2.4, py-1.11.0, pluggy-0.13.1 -- c:\dev
 django: settings: api_yamdb.settings (from ini)
 rootdir: C:\Dev\api_yamdb, configfile: pytest.ini, testpaths: tests/
 plugins: django-4.4.0, pythonpath-0.7.3
-collecting ... collected 77 items / 64 deselected / 13 selected
+collecting ... collected 77 items / 72 deselected / 5 selected
 
-tests/test_01_users.py::Test01UserAPI::test_01_users_not_authenticated PASSED [  7%]
-tests/test_01_users.py::Test01UserAPI::test_02_users_username_not_authenticated PASSED [ 15%]
-tests/test_01_users.py::Test01UserAPI::test_03_users_me_not_authenticated PASSED [ 23%]
-tests/test_02_category.py::Test02CategoryAPI::test_01_category_not_auth PASSED [ 30%]
-tests/test_02_category.py::Test02CategoryAPI::test_02_category_with_admin_user PASSED [ 38%]
-tests/test_02_category.py::Test02CategoryAPI::test_03_category_fields_validation[data0-massage0] PASSED [ 46%]
-tests/test_02_category.py::Test02CategoryAPI::test_03_category_fields_validation[data1-massage1] PASSED [ 53%]
-tests/test_02_category.py::Test02CategoryAPI::test_03_category_fields_validation[data2-massage2] PASSED [ 61%]
-tests/test_02_category.py::Test02CategoryAPI::test_04_category_delete_admin FAILED [ 69%]
-tests/test_02_category.py::Test02CategoryAPI::test_05_category_check_permission_admin FAILED [ 76%]
-tests/test_03_genre.py::Test03GenreAPI::test_03_category_fields_validation[data0-massage0] PASSED [ 84%]
-tests/test_03_genre.py::Test03GenreAPI::test_03_category_fields_validation[data1-massage1] PASSED [ 92%]
-tests/test_03_genre.py::Test03GenreAPI::test_03_category_fields_validation[data2-massage2] PASSED [100%]
+tests/test_04_title.py::Test04TitleAPI::test_01_title_not_auth PASSED    [ 20%]
+tests/test_04_title.py::Test04TitleAPI::test_02_title_admin FAILED       [ 40%]
+tests/test_04_title.py::Test04TitleAPI::test_03_titles_detail FAILED     [ 60%]
+tests/test_04_title.py::Test04TitleAPI::test_04_titles_name_length_validation PASSED [ 80%]
+tests/test_04_title.py::Test04TitleAPI::test_05_titles_check_permission FAILED [100%]
 
 ================================== FAILURES ===================================
-_______________ Test02CategoryAPI.test_04_category_delete_admin _______________
+_____________________ Test04TitleAPI.test_02_title_admin ______________________
 
-self = <tests.test_02_category.Test02CategoryAPI object at 0x0000020879226D30>
-admin_client = <rest_framework.test.APIClient object at 0x000002087922EBE0>
+self = <tests.test_04_title.Test04TitleAPI object at 0x00000219F7687390>
+admin_client = <rest_framework.test.APIClient object at 0x00000219F7AB3080>
+client = <django.test.client.Client object at 0x00000219F7AB8438>
 
-    def test_04_category_delete_admin(self, admin_client):
-        category_1, category_2 = create_categories(admin_client)
-        response = admin_client.delete(
-            f'/api/v1/categories/{category_1["slug"]}/'
+    def test_02_title_admin(self, admin_client, client):
+        genres = create_genre(admin_client)
+        categories = create_categories(admin_client)
+        url = '/api/v1/titles/'
+        title_count = 0
+    
+        assert_msg = (
+            f'Если POST-запрос администратора к `{url}` '
+            'содержит некорректные данные - должен вернуться ответ со '
+            'статусом 400.'
         )
-        assert response.status_code == HTTPStatus.NO_CONTENT, (
-            'Проверьте, что DELETE-запрос администратора к '
-            '`/api/v1/categories/{slug}/` возвращает ответ со статусом 204.'
+        data = {}
+        response = admin_client.post(url, data=data)
+        assert response.status_code == HTTPStatus.BAD_REQUEST, assert_msg
+    
+        invalid_data = {
+            'name': 'Угнать за 60 секунд',
+            'year': 'дветыщи',
+            'genre': [genres[1]['slug']],
+            'category': categories[1]['slug'],
+            'description': 'Угонял машины всю ночь и немного подустал.'
+        }
+        response = admin_client.post(url, data=invalid_data)
+        assert response.status_code == HTTPStatus.BAD_REQUEST, assert_msg
+    
+        post_data_1 = {
+            'name': 'Мост через реку Квай',
+            'year': 1957,
+            'genre': [genres[0]['slug'], genres[1]['slug']],
+            'category': categories[0]['slug'],
+            'description': 'Рон Свонсон рекомендует.'
+        }
+        response = admin_client.post(url, data=post_data_1)
+        assert response.status_code == HTTPStatus.CREATED, (
+            f'Если POST-запрос администратора к `{url}` '
+            'содержит корректные данные - должен вернуться ответ со статусом '
+            '201.'
         )
-        response = admin_client.get('/api/v1/categories/')
-        test_data = response.json()['results']
-        assert len(test_data) == 1, (
-            'Проверьте, что DELETE-запрос администратора к '
-            '`/api/v1/categories/{slug}/` удаляет категорию.'
+        title_count += 1
+    
+        post_data_2 = {
+            'name': 'Хороший, плохой, злой.',
+            'year': 1966,
+            'genre': [genres[2]['slug']],
+            'category': categories[1]['slug'],
+            'description': 'Угадай ревьюера по названию фильма.'
+        }
+        response = admin_client.post(url, data=post_data_2)
+        assert response.status_code == HTTPStatus.CREATED, (
+            f'Если POST-запрос администратора к `{url}` '
+            'содержит корректные данные - должен вернуться ответ со статусом '
+            '201.'
+        )
+        title_count += 1
+        assert isinstance(response.json().get('id'), int), (
+            f'Проверьте, при POST-запросе администратора к `{url}` '
+            'в ответе возвращаются данные созданного объекта. Сейчас поле '
+            '`id` отсутствует или не является целым числом.'
         )
     
-        response = admin_client.get(
-            f'/api/v1/categories/{category_2["slug"]}/'
+        response = client.get(url)
+        assert response.status_code == HTTPStatus.OK, (
+            'Проверьте, что GET-запрос неавторизованного пользователя к '
+            f'`{url}` возвращает ответ со статусом 200.'
         )
->       assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED, (
-            'Проверьте, что GET-запросы к `/api/v1/categories/{slug}/` '
-            'запрещены и возвращают ответ со статусом 405.'
+        data = response.json()
+        check_pagination(url, data, title_count)
+    
+        expected_title_names = {post_data_1['name'], post_data_2['name']}
+        title_names = {element.get('name') for element in data['results']}
+        assert len(expected_title_names.intersection(title_names)) == 2, (
+            f'Проверьте, что для эндпоинта `{url}` настроена пагинация. '
+            'Сейчас значение параметра `results` отсутствует или содержит '
+            'некорректную информацию о существующих объектах.'
         )
-E       AssertionError: Проверьте, что GET-запросы к `/api/v1/categories/{slug}/` запрещены и возвращают ответ со статусом 405.
-E       assert 200 == <HTTPStatus.METHOD_NOT_ALLOWED: 405>
-E         +200
-E         -<HTTPStatus.METHOD_NOT_ALLOWED: 405>
+    
+        for element in data['results']:
+            if element['name'] == post_data_1['name']:
+                title = element
+    
+        assert title.get('rating') is None, (
+            'Проверьте, что при GET-запросе неавторизованного '
+            f'пользователя к `{url}` возвращается информация о рейтинге '
+            'произведений. Если отзывов о произведении нет - значением '
+            'поля `rating` должено быть `None`.'
+        )
+>       assert title.get('category') == categories[0], (
+            'Проверьте, что при GET-запросе неавторизованного '
+            f'пользователя к `{url}` в ответе содержится информация о '
+            'категориях произведений. Сейчас поле `category` для элементов '
+            'списка `results` отсутствует или содержит некорректное значение.'
+        )
+E       AssertionError: Проверьте, что при GET-запросе неавторизованного пользователя к `/api/v1/titles/` в ответе содержится информация о категориях произведений. Сейчас поле `category` для элементов списка `results` отсутствует или содержит некорректное значение.
+E       assert 'films' == {'name': 'Фильм', 'slug': 'films'}
+E         +'films'
+E         -{'name': 'Фильм', 'slug': 'films'}
 
-tests\test_02_category.py:113: AssertionError
-__________ Test02CategoryAPI.test_05_category_check_permission_admin __________
+tests\test_04_title.py:109: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  django.request:log.py:230 Bad Request: /api/v1/titles/
+WARNING  django.request:log.py:230 Bad Request: /api/v1/titles/
+____________________ Test04TitleAPI.test_03_titles_detail _____________________
 
-self = <tests.test_02_category.Test02CategoryAPI object at 0x000002087922E860>
-client = <django.test.client.Client object at 0x000002087921F5C0>
-user_client = <rest_framework.test.APIClient object at 0x000002087921F8D0>
-moderator_client = <rest_framework.test.APIClient object at 0x000002087921F7B8>
-admin_client = <rest_framework.test.APIClient object at 0x000002087921F668>
+self = <tests.test_04_title.Test04TitleAPI object at 0x00000219F7BBAD30>
+client = <django.test.client.Client object at 0x00000219F7BBA278>
+admin_client = <rest_framework.test.APIClient object at 0x00000219F7BC30F0>
 
-    def test_05_category_check_permission_admin(self, client,
-                                                user_client,
-                                                moderator_client,
-                                                admin_client):
-        categories = create_categories(admin_client)
+    def test_03_titles_detail(self, client, admin_client):
+        titles, categories, genres = create_titles(admin_client)
+        response = client.get(f'/api/v1/titles/{titles[0]["id"]}/')
+        assert response.status_code != HTTPStatus.NOT_FOUND, (
+            'Эндпоинт `/api/v1/titles/{title_id}/` не найден, проверьте '
+            'настройки в *urls.py*.'
+        )
+        assert response.status_code == HTTPStatus.OK, (
+            'Проверьте, что GET-запрос неавторизованного пользователя к '
+            '`/api/v1/titles/{title_id}/` возвращает ответ со статусом 200.'
+        )
+        data = response.json()
+        assert isinstance(data.get('id'), int), (
+            'Поле `id` отсутствует или содержит некорректное значение '
+            'в ответе на GET-запрос неавторизованного пользователя к '
+            '`/api/v1/titles/{title_id}/`.'
+        )
+>       assert data.get('category') == categories[0], (
+            'Поле `category` отсутствует или содержит некорректное значение '
+            'в ответе на GET-запрос неавторизованного пользователя к '
+            '`/api/v1/titles/{title_id}/`.'
+        )
+E       AssertionError: Поле `category` отсутствует или содержит некорректное значение в ответе на GET-запрос неавторизованного пользователя к `/api/v1/titles/{title_id}/`.
+E       assert 'films' == {'name': 'Фильм', 'slug': 'films'}
+E         +'films'
+E         -{'name': 'Фильм', 'slug': 'films'}
+
+tests\test_04_title.py:199: AssertionError
+_______________ Test04TitleAPI.test_05_titles_check_permission ________________
+
+self = <tests.test_04_title.Test04TitleAPI object at 0x00000219F7B426A0>
+client = <django.test.client.Client object at 0x00000219F7C36668>
+user_client = <rest_framework.test.APIClient object at 0x00000219F7C36048>
+moderator_client = <rest_framework.test.APIClient object at 0x00000219F7C366D8>
+admin_client = <rest_framework.test.APIClient object at 0x00000219F7C36BA8>
+
+    def test_05_titles_check_permission(self, client, user_client,
+                                        moderator_client, admin_client):
+        titles, categories, genres = create_titles(admin_client)
+        url = '/api/v1/titles/'
         data = {
-            'name': 'Музыка',
-            'slug': 'music'
+            'name': 'Зловещие мертвецы',
+            'year': 1981,
+            'genre': [genres[2]['slug'], genres[1]['slug']],
+            'category': categories[0]['slug'],
+            'description': 'This Is My Boomstick! - Ash'
         }
-        url = '/api/v1/categories/'
-        check_permissions(client, url, data, 'неавторизованного пользователя',
-                          categories, HTTPStatus.UNAUTHORIZED)
+        check_permissions(client, url, data,
+                          'неавторизованного пользователя', titles,
+                          HTTPStatus.UNAUTHORIZED)
         check_permissions(user_client, url, data,
-                          'пользователя с ролью `user`', categories,
+                          'пользователя с ролью `user`', titles,
 >                         HTTPStatus.FORBIDDEN)
 
-tests\test_02_category.py:139: 
+tests\test_04_title.py:316: 
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-client = <rest_framework.test.APIClient object at 0x000002087921F8D0>
-url = '/api/v1/categories/', data = {'name': 'Музыка', 'slug': 'music'}
+client = <rest_framework.test.APIClient object at 0x00000219F7C36048>
+url = '/api/v1/titles/'
+data = {'category': 'films', 'description': 'This Is My Boomstick! - Ash', 'genre': ['drama', 'comedy'], 'name': 'Зловещие мертвецы', ...}
 user_role = 'пользователя с ролью `user`'
-objects = [{'name': 'Фильм', 'slug': 'films'}, {'name': 'Книги', 'slug': 'books'}]
+objects = [{'category': 'films', 'description': 'I`ll be back', 'genre': ['horror', 'comedy'], 'id': 6, ...}, {'category': 'books', 'description': 'Yippie ki yay...', 'genre': ['drama'], 'id': 7, ...}]
 expected_status = <HTTPStatus.FORBIDDEN: 403>
 
     def check_permissions(client, url, data, user_role, objects,
@@ -96,13 +198,15 @@ expected_status = <HTTPStatus.FORBIDDEN: 403>
 >           f'Проверьте, что POST-запрос {user_role} к `{url}` возвращает ответ '
             f'со статусом {expected_status}.'
         )
-E       AssertionError: Проверьте, что POST-запрос пользователя с ролью `user` к `/api/v1/categories/` возвращает ответ со статусом 403.
+E       AssertionError: Проверьте, что POST-запрос пользователя с ролью `user` к `/api/v1/titles/` возвращает ответ со статусом 403.
 
 tests\utils.py:138: AssertionError
 ------------------------------ Captured log call ------------------------------
-WARNING  django.request:log.py:230 Unauthorized: /api/v1/categories/
-WARNING  django.request:log.py:230 Unauthorized: /api/v1/categories/films/
-WARNING  django.request:log.py:230 Unauthorized: /api/v1/categories/films/
+WARNING  django.request:log.py:230 Unauthorized: /api/v1/titles/
+WARNING  django.request:log.py:230 Unauthorized: /api/v1/titles/6/
+WARNING  django.request:log.py:230 Unauthorized: /api/v1/titles/6/
+-------------------------- Captured stderr teardown ---------------------------
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
 ============================== warnings summary ===============================
 venv\lib\site-packages\pkg_resources\_vendor\pyparsing.py:943
   c:\dev\api_yamdb\venv\lib\site-packages\pkg_resources\_vendor\pyparsing.py:943: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated, and in 3.8 it will stop working
@@ -112,14 +216,14 @@ venv\lib\site-packages\pkg_resources\_vendor\pyparsing.py:3226
   c:\dev\api_yamdb\venv\lib\site-packages\pkg_resources\_vendor\pyparsing.py:3226: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated, and in 3.8 it will stop working
     elif isinstance( exprs, collections.Iterable ):
 
-tests/test_02_category.py::Test02CategoryAPI::test_01_category_not_auth
-tests/test_02_category.py::Test02CategoryAPI::test_02_category_with_admin_user
-tests/test_02_category.py::Test02CategoryAPI::test_04_category_delete_admin
-  c:\dev\api_yamdb\venv\lib\site-packages\rest_framework\pagination.py:200: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'reviews.models.Categories'> QuerySet.
+tests/test_04_title.py::Test04TitleAPI::test_01_title_not_auth
+tests/test_04_title.py::Test04TitleAPI::test_02_title_admin
+  c:\dev\api_yamdb\venv\lib\site-packages\rest_framework\pagination.py:200: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'reviews.models.Title'> QuerySet.
     paginator = self.django_paginator_class(queryset, page_size)
 
 -- Docs: https://docs.pytest.org/en/stable/warnings.html
 =========================== short test summary info ===========================
-FAILED tests/test_02_category.py::Test02CategoryAPI::test_04_category_delete_admin
-FAILED tests/test_02_category.py::Test02CategoryAPI::test_05_category_check_permission_admin
-=========== 2 failed, 11 passed, 64 deselected, 5 warnings in 6.12s ===========
+FAILED tests/test_04_title.py::Test04TitleAPI::test_02_title_admin - Assertio...
+FAILED tests/test_04_title.py::Test04TitleAPI::test_03_titles_detail - Assert...
+FAILED tests/test_04_title.py::Test04TitleAPI::test_05_titles_check_permission
+=========== 3 failed, 2 passed, 72 deselected, 4 warnings in 3.39s ============

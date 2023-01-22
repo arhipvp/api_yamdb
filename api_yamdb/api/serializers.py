@@ -34,7 +34,6 @@ class TitleSerializer(serializers.ModelSerializer):
         slug_field='slug',
         queryset=Categories.objects.all()
     )
-
     class Meta:
         fields = '__all__'
         model = Title
@@ -99,14 +98,14 @@ class UsersSerializer(serializers.ModelSerializer):
 
 
 class ReviewsSerializer(serializers.ModelSerializer):
-    title = serializers.SlugRelatedField(
-        slug_field='name',
-        read_only=True,
+    title = TitleSerializer(
+        instance=
     )
     author = serializers.SlugRelatedField(
         default=serializers.CurrentUserDefault(),
         slug_field='username',
-        read_only=True
+        #read_only=True
+        query
     )
 
     class Meta:

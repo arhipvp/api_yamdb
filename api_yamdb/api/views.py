@@ -11,7 +11,12 @@ from rest_framework.permissions import (AllowAny, IsAuthenticated,
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from reviews.models import Categories, Comment, Genres, Review, Title, User
+from reviews.models import Genres, Title, User, Categories, Review, Comment
+from rest_framework.decorators import action
+from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
+                          GenresSerializer, TitleSerializer, UsersSerializer,
+                          CategoriesSerializer, ReviewsSerializer,
+                          CommentsSerializer, ReadOnlyTitleSerializer)
 
 from .permissions import IsAdminOrReadOnly, IsAdminOrSuperUser
 from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
@@ -35,6 +40,14 @@ class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly, )
 
 
+
+class CategoriesViewSet(viewsets.ModelViewSet):
+    queryset = Сategories.objects.all()
+    serializer_class = CategoriesSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
 

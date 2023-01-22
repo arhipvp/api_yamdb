@@ -22,11 +22,22 @@ class IsAdminOrReadOnly(permissions.BasePermission):
     Права админа или только на чтение
     """
 
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return (
+                request.user.is_admin
+                or request.user.is_superuser
+        )
+
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        return request.user.is_admin
+        return (
+                request.user.is_admin
+                or request.user.is_superuser
+        )
 
 
 class IsAdminOrSuperUser(permissions.BasePermission):
@@ -36,12 +47,12 @@ class IsAdminOrSuperUser(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return (
-            request.user.is_admin
-            or request.user.is_superuser
+                request.user.is_admin
+                or request.user.is_superuser
         )
 
     def has_object_permission(self, request, view, obj):
         return (
-            request.user.is_admin
-            or request.user.is_superuser
+                request.user.is_admin
+                or request.user.is_superuser
         )

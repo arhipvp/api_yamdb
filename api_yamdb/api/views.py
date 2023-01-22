@@ -1,34 +1,43 @@
 from django.core.mail import send_mail
+from django.db.models import QuerySet
+from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, status, viewsets
+from rest_framework import filters, status, viewsets, generics
 from rest_framework.decorators import action
 from rest_framework.permissions import (IsAdminUser, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
-from reviews.models import Genres, Title, User, Сategories
-from django.http import HttpRequest
-from django.db.models import QuerySet
-from rest_framework import status, viewsets
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
-from reviews.models import Genres, Title, User, Сategories, Review, Comment
-from rest_framework.decorators import action
-from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
-                          GenresSerializer, TitleSerializer, UsersSerializer,
-                          СategoriesSerializer, ReviewsSerializer, CommentsSerializer)
+from reviews.models import Comment, Genres, Review, Title, User, Сategories
 
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsAdminOnly
 from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
-                          GenresSerializer, ReadOnlyTitleSerializer,
+                          CommentsSerializer, GenresSerializer,
+                          ReadOnlyTitleSerializer, ReviewsSerializer,
                           TitleSerializer, UsersSerializer,
                           СategoriesSerializer)
+from rest_framework import generics, mixins, views
+from rest_framework.generics import ListCreateAPIView, UpdateAPIView
 
-
+class СategoriesAPIList(ListCreateAPIView, UpdateAPIView):
+    queryset = Сategories.objects.all()
+    serializer_class = СategoriesSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', )
+    lookup_field = 'slug'
+    permission_classes = (IsAdminOrReadOnly, )
+    #http_method_names = ['get', 'post', , 'head', 'options', ]	
+    
+    
+class СategoriesAPIDestroy(generics.DestroyAPIView):
+    queryset = Сategories.objects.all()
+    serializer_class = СategoriesSerializer
+    lookup_field = 'slug'
+    http_method_names = ['delete', 'head', 'options', ]
+    permission_classes = (IsAdminOnly, IsAuthenticated)
 
 class GenresViewSet(viewsets.ModelViewSet):
     queryset = Genres.objects.all()
@@ -51,13 +60,8 @@ class TitleViewSet(viewsets.ModelViewSet):
     
 
 
-class СategoriesViewSet(viewsets.ModelViewSet):
-    queryset = Сategories.objects.all()
-    serializer_class = СategoriesSerializer
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name', )
-    lookup_field = 'slug'
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+
+    
 
 
 class AuthSignup(APIView):

@@ -17,9 +17,6 @@ class СategoriesSerializer(serializers.ModelSerializer):
         model = Сategories
         fields = ('name', 'slug')
         lookup_field = 'slug'
-        extra_kwargs = {
-            'url': {'lookup_field': 'slug'}
-        }
         
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -39,17 +36,6 @@ class TitleSerializer(serializers.ModelSerializer):
 class ReadOnlyTitleSerializer(serializers.ModelSerializer):
     genre = GenresSerializer(many=True)
     category = СategoriesSerializer()
-
-
-class СategoriesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Title
-        fields = '__all__'
-        
-
-
-
-        
 
 
 class AuthSignupSerializer(serializers.ModelSerializer):

@@ -6,8 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from django.http import HttpRequest
 from django.db.models import QuerySet
-from rest_framework.permissions import IsAuthenticated, \
-    IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework import filters, viewsets, status
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
@@ -53,7 +52,7 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     @action(
         methods=['post'],
         detail=False,
-        permission_classes = (IsAdminOrSuperUser, )
+        permission_classes=(IsAdminOrSuperUser,)
     )
     def CategoryPost(self, request):
         serializer = CategoriesSerializer(request.data)
@@ -133,21 +132,17 @@ class UsersViewSet(viewsets.ModelViewSet):
 
 class ReviewsViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewsSerializer
-
-    def get_title(self, request: HttpRequest) -> Title:
-        del request
-        return get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self) -> QuerySet:
-        return self.get_title(self).reviews.select_related('title')
+        title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+        return title.reviews.select_related('title')
 
 
 class CommentsViewSet(viewsets.ModelViewSet):
     serializer_class = CommentsSerializer
-
-    def get_review(self, request: HttpRequest) -> Title:
-        del request
-        return get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self) -> QuerySet:
-        return self.get_review(self).comments.select_related('review')
+        review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+        return review.comments.select_related('review')

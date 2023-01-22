@@ -101,17 +101,18 @@ class Review(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='reviews',
+        verbose_name='review author',
     )
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
         related_name='reviews',
+        verbose_name='review title',
     )
     text = models.TextField()
     pub_date = models.DateTimeField(
         'Дата публикации',
         auto_now_add=True,
-        db_index=True,
     )
     score = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)]
@@ -142,7 +143,6 @@ class Comment(models.Model):
     pub_date = models.DateTimeField(
         'Дата публикации',
         auto_now_add=True,
-        db_index=True,
     )
 
     def __str__(self) -> str:

@@ -42,13 +42,26 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     lookup_field = 'slug'
     permission_classes = (IsAuthenticatedOrReadOnly, )
     
-    def create(self, request, pk=None):
+    @action(
+        methods=['POST'],
+        detail=False,
+        permission_classes=(IsAdminOrSuperUser,),
+     )
+    def CategorieCreate(self, request, *args, **kwargs):
+        self.permission_classes = (IsAdminOrSuperUser, )
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+"""     def create(self, request, pk=None):
         self.permission_classes = (IsAdminOrReadOnly, )
         serializer = CategoriesSerializer(data=request.data)
-        serializer.is_valid()
-        serializer.save()
-        print (str(serializer))
-        return Response()
+        if serializer.is_valid():
+            serializer.save()
+        print (str(serializer.data))
+        return Response(serializer.data) """
     
         
 

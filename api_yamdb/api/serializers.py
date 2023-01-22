@@ -13,7 +13,8 @@ class GenresSerializer(serializers.ModelSerializer):
             'url': {'lookup_field': 'slug'}
         }
 
-class СategoriesSerializer(serializers.ModelSerializer):
+
+class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Сategories
         fields = ('name', 'slug')
@@ -21,7 +22,6 @@ class СategoriesSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'url': {'lookup_field': 'slug'}
         }
-
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -34,6 +34,7 @@ class TitleSerializer(serializers.ModelSerializer):
         slug_field='slug',
         queryset=Сategories.objects.all()
     )
+
     class Meta:
         fields = '__all__'
         model = Title
@@ -41,18 +42,13 @@ class TitleSerializer(serializers.ModelSerializer):
 
 class ReadOnlyTitleSerializer(serializers.ModelSerializer):
     genre = GenresSerializer(many=True)
-    category = СategoriesSerializer()
+    category = CategoriesSerializer()
 
 
-class СategoriesSerializer(serializers.ModelSerializer):
+class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
         fields = '__all__'
-
-
-
-
-
 
 
 class AuthSignupSerializer(serializers.ModelSerializer):
@@ -98,7 +94,7 @@ class UsersSerializer(serializers.ModelSerializer):
     username = serializers.RegexField(
         "^[\w.@+-]+\Z$", max_length=150,
         required=True, validators=[
-        UniqueValidator(queryset=User.objects.all())]
+            UniqueValidator(queryset=User.objects.all())]
     )
 
     class Meta:

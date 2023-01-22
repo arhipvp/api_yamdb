@@ -1,19 +1,12 @@
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, status, viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import (IsAdminUser, IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
-from reviews.models import Genres, Title, User, Сategories
+
 from django.http import HttpRequest
 from django.db.models import QuerySet
 from rest_framework.permissions import IsAuthenticated, \
     IsAuthenticatedOrReadOnly
-from rest_framework import viewsets, status
+from rest_framework import filters, viewsets, status
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
 from rest_framework.views import APIView
@@ -22,24 +15,18 @@ from reviews.models import Genres, Title, User, Сategories, Review, Comment
 from rest_framework.decorators import action
 from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
                           GenresSerializer, TitleSerializer, UsersSerializer,
-                          СategoriesSerializer, ReviewsSerializer, CommentsSerializer)
+                          CategoriesSerializer, ReviewsSerializer,
+                          CommentsSerializer, ReadOnlyTitleSerializer)
 
 from .permissions import IsAdminOrReadOnly, IsAdminOrSuperUser
-
-from .permissions import IsAdminOrReadOnly
-from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
-                          GenresSerializer, ReadOnlyTitleSerializer,
-                          TitleSerializer, UsersSerializer,
-                          СategoriesSerializer)
-
 
 
 class GenresViewSet(viewsets.ModelViewSet):
     queryset = Genres.objects.all()
     serializer_class = GenresSerializer
-    permission_classes = (IsAdminOrReadOnly, )
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('name', )
+    search_fields = ('name',)
     lookup_field = 'slug'
 
 
@@ -47,22 +34,17 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
 
-
-class CategoriesViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ('retrieve', 'list'):
             return ReadOnlyTitleSerializer
         return TitleSerializer
 
 
-
-
-
-class СategoriesViewSet(viewsets.ModelViewSet):
+class CategoriesViewSet(viewsets.ModelViewSet):
     queryset = Сategories.objects.all()
-    serializer_class = СategoriesSerializer
+    serializer_class = CategoriesSerializer
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('name', )
+    search_fields = ('name',)
     lookup_field = 'slug'
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
@@ -115,7 +97,8 @@ class UsersViewSet(viewsets.ModelViewSet):
     filter_backends = (SearchFilter,)
     search_fields = ('username',)
     permission_classes = (IsAuthenticated, IsAdminOrSuperUser,)
-    http_method_names = ['get', 'post', 'head', 'patch','delete']
+    http_method_names = ['get', 'post', 'head', 'patch', 'delete']
+
     @action(
         methods=['GET', 'PATCH'],
         detail=False,

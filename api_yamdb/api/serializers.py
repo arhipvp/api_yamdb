@@ -98,14 +98,14 @@ class UsersSerializer(serializers.ModelSerializer):
 
 
 class ReviewsSerializer(serializers.ModelSerializer):
-    title = TitleSerializer(
-        instance=
+    title = serializers.SlugRelatedField(
+        slug_field='name',
+        read_only=True,
     )
     author = serializers.SlugRelatedField(
         default=serializers.CurrentUserDefault(),
         slug_field='username',
-        #read_only=True
-        query
+        read_only=True
     )
 
     class Meta:

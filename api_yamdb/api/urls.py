@@ -23,8 +23,6 @@ router.register('v1/categories', CategoriesViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('v1/categories/', СategoriesAPIList.as_view()),
-    path('v1/categories/<slug:slug>/', СategoriesAPIDestroy.as_view()),
     path('v1/auth/signup/', AuthSignup.as_view(), name='signup'),
     path('v1/auth/token/', AuthToken.as_view(), name='token'),
 ]

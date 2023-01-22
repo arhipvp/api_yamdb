@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from reviews.models import Genres, User, Title, Сategories, Review, Comment
+from reviews.models import Genres, User, Title, Categories, Review, Comment
 
 
 class GenresSerializer(serializers.ModelSerializer):
@@ -16,7 +16,7 @@ class GenresSerializer(serializers.ModelSerializer):
 
 class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Сategories
+        model = Categories
         fields = ('name', 'slug')
         lookup_field = 'slug'
         extra_kwargs = {
@@ -32,7 +32,7 @@ class TitleSerializer(serializers.ModelSerializer):
     )
     category = serializers.SlugRelatedField(
         slug_field='slug',
-        queryset=Сategories.objects.all()
+        queryset=Categories.objects.all()
     )
 
     class Meta:
@@ -43,12 +43,6 @@ class TitleSerializer(serializers.ModelSerializer):
 class ReadOnlyTitleSerializer(serializers.ModelSerializer):
     genre = GenresSerializer(many=True)
     category = CategoriesSerializer()
-
-
-class CategoriesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Title
-        fields = '__all__'
 
 
 class AuthSignupSerializer(serializers.ModelSerializer):

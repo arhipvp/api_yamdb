@@ -1,11 +1,12 @@
 import hashlib
 
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.core.exceptions import ValidationError
-from .validations import ValidateYear
 from django.db.models import UniqueConstraint
+
+from .validations import ValidateYear
 
 USER = 'user'
 MODERATOR = 'moderator'
@@ -65,7 +66,7 @@ class Genres(models.Model):
     )
 
 
-class Сategories(models.Model):
+class Categories(models.Model):
     name = models.CharField(
         max_length=256,
         null=False,
@@ -84,12 +85,12 @@ class Title(models.Model):
         null=False,
     )
     year = models.IntegerField(
-        #validators=[ValidateYear]
+        validators=[ValidateYear]
     )
     description = models.TextField()
     genre = models.ManyToManyField(Genres, related_name='genres')
     category = models.ForeignKey(
-        Сategories,
+        Categories,
         on_delete=models.SET_NULL,
         null=True,
         related_name='category',

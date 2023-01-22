@@ -3,30 +3,27 @@ from django.db.models import QuerySet
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-
-from django.http import HttpRequest
-from django.db.models import QuerySet
-from rest_framework.permissions import IsAuthenticated, \
-    IsAuthenticatedOrReadOnly
-from rest_framework import filters, viewsets, status
-from rest_framework.response import Response
+from rest_framework import filters, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from reviews.models import Genres, Title, User, Сategories, Review, Comment
-from rest_framework.decorators import action
-from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
-                          GenresSerializer, TitleSerializer, UsersSerializer,
-                          CategoriesSerializer, ReviewsSerializer,
-                          CommentsSerializer, ReadOnlyTitleSerializer)
+from reviews.models import Categories, Comment, Genres, Review, Title, User
 
 from .permissions import IsAdminOrReadOnly, IsAdminOrSuperUser
+from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
+                          CategoriesSerializer, CommentsSerializer,
+                          GenresSerializer, ReadOnlyTitleSerializer,
+                          ReviewsSerializer, TitleSerializer, UsersSerializer)
 
 
 class GenresViewSet(viewsets.ModelViewSet):
     queryset = Genres.objects.all()
     serializer_class = GenresSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, )
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -43,23 +40,16 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class CategoriesViewSet(viewsets.ModelViewSet):
-    queryset = Сategories.objects.all()
+    queryset = Categories.objects.all()
     serializer_class = CategoriesSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    
 
-    @action(
-        methods=['post'],
-        detail=False,
-        permission_classes = (IsAdminOrSuperUser, )
-    )
-    def CategoryPost(self, request):
-        serializer = CategoriesSerializer(request.data)
-        if serializer.is_valid:
-            serializer.save()
-        return Response(serializer.data)
+    
+        
+
 
 class AuthSignup(APIView):
     """

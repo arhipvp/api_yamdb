@@ -33,11 +33,6 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
 
-    def get_serializer_class(self):
-        if self.action in ('retrieve', 'list'):
-            return ReadOnlyTitleSerializer
-        return TitleSerializer
-
 
 class CategoriesViewSet(viewsets.ModelViewSet):
     queryset = Categories.objects.all()
@@ -45,8 +40,15 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
+    permission_classes = (IsAuthenticatedOrReadOnly, )
     
-
+    def create(self, request, pk=None):
+        self.permission_classes = (IsAdminOrReadOnly, )
+        serializer = CategoriesSerializer(data=request.data)
+        serializer.is_valid()
+        serializer.save()
+        print (str(serializer))
+        return Response()
     
         
 

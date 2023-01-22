@@ -3,6 +3,10 @@ from rest_framework.validators import UniqueValidator
 
 from reviews.models import Genres, User, Title, Categories, Review, Comment
 
+from rest_framework.exceptions import ValidationError
+from rest_framework.generics import get_object_or_404
+from django.http import HttpRequest
+
 
 class GenresSerializer(serializers.ModelSerializer):
     class Meta:
@@ -108,9 +112,38 @@ class ReviewsSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
+    def get_author(self, request: HttpRequest) -> User:
+        del request
+        return self.context.get('request').user
+
+    def get_title(self, request: HttpRequest) -> Title:
+        del request
+        return get_object_or_404(
+            Title,
+            pk=self.context.get('view').kwargs.get('title_id'),
+        )
+
+    def validate(self, data):
+        if self.context.get('request').method == 'POST':
+            if Review.objects.filter(
+                title=self.get_title(self),
+                author=self.get_author(self),
+            ).exists():
+                raise ValidationError(
+                    'На одно произведение можно оставить только один отзыв',
+                )
+        return data
+
+    def create(self, validated_data):
+        return Review.objects.create(
+            title=self.get_title(self),
+            author=self.get_author(self),
+            **validated_data,
+        )
+
     class Meta:
         model = Review
-        fields = ('author', 'title', 'text', 'pub_date', 'score')
+        fields = ('author', 'title', 'id', 'text', 'pub_date', 'score')
 
 
 class CommentsSerializer(serializers.ModelSerializer):
@@ -123,6 +156,16 @@ class CommentsSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
+    def create(self, validated_data):
+        return Comment.objects.create(
+            review=get_object_or_404(
+                Review,
+                pk=self.context.get('view').kwargs.get('review_id'),
+            ),
+            author=self.context.get('request').user,
+            **validated_data,
+        )
+
     class Meta:
         model = Comment
-        fields = ('author', 'text', 'pub_date')
+        fields = ('author', 'review', 'id', 'text', 'pub_date')

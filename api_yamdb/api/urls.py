@@ -12,12 +12,12 @@ router.register(r'v1/categories', CategoriesViewSet)
 router.register(
     r'v1/titles/(?P<title_id>[0-9]+)/reviews',
     ReviewsViewSet,
-    basename='Review',
+    basename='reviews',
 )
 router.register(
     'v1/titles/(?P<title_id>[0-9]+)/reviews/(?P<review_id>[0-9]+)/comments',
     CommentsViewSet,
-    basename='Comment',
+    basename='comments',
 )
 
 router.register('v1/categories', CategoriesViewSet)

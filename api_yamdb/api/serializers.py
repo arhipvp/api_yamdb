@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 from reviews.models import Genres, User, Title, Сategories
 
@@ -10,15 +11,18 @@ class GenresSerializer(serializers.ModelSerializer):
         model = Genres
         lookup_field = 'slug'
 
+
 class TitleSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Title
 
+
 class СategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('name', 'slug')
         model = Сategories
+
 
 class AuthSignupSerializer(serializers.ModelSerializer):
     username = serializers.RegexField("^[\w.@+-]+\Z$", max_length=150)
@@ -60,7 +64,11 @@ class AuthTokenSerializer(serializers.ModelSerializer):
 
 
 class UsersSerializer(serializers.ModelSerializer):
-    username = serializers.RegexField("^[\w.@+-]+\Z$", max_length=150)
+    username = serializers.RegexField(
+        "^[\w.@+-]+\Z$", max_length=150,
+        required=True, validators=[
+        UniqueValidator(queryset=User.objects.all())]
+    )
 
     class Meta:
         model = User

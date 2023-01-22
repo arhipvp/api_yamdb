@@ -1,11 +1,10 @@
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
-from rest_framework import status, viewsets
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, \
+    IsAuthenticatedOrReadOnly
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.filters import SearchFilter
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from reviews.models import Genres, Title, User, Сategories
@@ -14,7 +13,8 @@ from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
                           GenresSerializer, TitleSerializer, UsersSerializer,
                           СategoriesSerializer)
 
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsAdminOrSuperUser
+
 
 class GenresViewSet(viewsets.ModelViewSet):
     queryset = Genres.objects.all()
@@ -22,22 +22,17 @@ class GenresViewSet(viewsets.ModelViewSet):
     lookup_field = 'slug'
 
 
-
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
 
 
-class СategoriesViewSet(viewsets.ModelViewSet):
+class CategoriesViewSet(viewsets.ModelViewSet):
     queryset = Сategories.objects.all()
     serializer_class = СategoriesSerializer
     search_fields = 'name'
     lookup_field = 'slug'
-    permission_classes = (IsAuthenticatedOrReadOnly, )
-
-
-
-
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
 class AuthSignup(APIView):
@@ -84,16 +79,18 @@ class AuthToken(APIView):
 class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
-    permission_classes = (IsAuthenticated,)
     lookup_field = 'username'
-
+    filter_backends = (SearchFilter,)
+    search_fields = ('username',)
+    permission_classes = (IsAuthenticated, IsAdminOrSuperUser,)
+    http_method_names = ['get', 'post', 'head', 'patch','delete']
     @action(
         methods=['GET', 'PATCH'],
         detail=False,
         permission_classes=(IsAuthenticated,),
         url_path='me')
     def me_actions(self, request):
-        ''' Получить/Обновить свои данные'''
+        """ Получить/Обновить свои данные"""
         if request.method == 'GET':
             serializer = UsersSerializer(request.user)
             return Response(serializer.data)

@@ -43,8 +43,13 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     search_fields = ('name',)
     lookup_field = 'slug'
     permission_classes = (IsAuthenticatedOrReadOnly,)
-
-    @action(
+    
+    def retrieve(self, request, slug=None):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    def partial_update(self, request, slug=None):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        
+"""     @action(
         methods=['post'],
         detail=False,
         permission_classes=(IsAdminOrSuperUser,)
@@ -53,7 +58,7 @@ class CategoriesViewSet(viewsets.ModelViewSet):
         serializer = CategoriesSerializer(request.data)
         if serializer.is_valid:
             serializer.save()
-        return Response(serializer.data)
+        return Response(serializer.data) """
 
 
 class AuthSignup(APIView):

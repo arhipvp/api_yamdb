@@ -3,65 +3,52 @@ from django.db.models import QuerySet
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, status, viewsets, generics
-from rest_framework.decorators import action
-from rest_framework.permissions import (IsAdminUser, IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+
+from django.http import HttpRequest
+from django.db.models import QuerySet
+from rest_framework.permissions import IsAuthenticated, \
+    IsAuthenticatedOrReadOnly
+from rest_framework import filters, viewsets, status
 from rest_framework.response import Response
+from rest_framework.filters import SearchFilter
 from rest_framework.views import APIView
-from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
-from reviews.models import Comment, Genres, Review, Title, User, Сategories
-
-from .permissions import IsAdminOrReadOnly, IsAdminOnly
+from reviews.models import Genres, Title, User, Сategories, Review, Comment
+from rest_framework.decorators import action
 from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
-                          CommentsSerializer, GenresSerializer,
-                          ReadOnlyTitleSerializer, ReviewsSerializer,
-                          TitleSerializer, UsersSerializer,
-                          СategoriesSerializer)
-from rest_framework import generics, mixins, views
-from rest_framework.generics import ListCreateAPIView, UpdateAPIView
+                          GenresSerializer, TitleSerializer, UsersSerializer,
+                          CategoriesSerializer, ReviewsSerializer,
+                          CommentsSerializer, ReadOnlyTitleSerializer)
 
-class СategoriesAPIList(ListCreateAPIView, UpdateAPIView):
-    queryset = Сategories.objects.all()
-    serializer_class = СategoriesSerializer
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name', )
-    lookup_field = 'slug'
-    permission_classes = (IsAdminOrReadOnly, )
-    #http_method_names = ['get', 'post', , 'head', 'options', ]	
-    
-    
-class СategoriesAPIDestroy(generics.DestroyAPIView):
-    queryset = Сategories.objects.all()
-    serializer_class = СategoriesSerializer
-    lookup_field = 'slug'
-    http_method_names = ['delete', 'head', 'options', ]
-    permission_classes = (IsAdminOnly, IsAuthenticated)
+from .permissions import IsAdminOrReadOnly, IsAdminOrSuperUser
+
 
 class GenresViewSet(viewsets.ModelViewSet):
     queryset = Genres.objects.all()
     serializer_class = GenresSerializer
-    permission_classes = (IsAdminOrReadOnly, )
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('name', )
+    search_fields = ('name',)
     lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
+
     def get_serializer_class(self):
         if self.action in ('retrieve', 'list'):
             return ReadOnlyTitleSerializer
         return TitleSerializer
-    
-    
-    
 
 
-
-    
+class CategoriesViewSet(viewsets.ModelViewSet):
+    queryset = Сategories.objects.all()
+    serializer_class = CategoriesSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
 class AuthSignup(APIView):
@@ -73,7 +60,9 @@ class AuthSignup(APIView):
     def post(request):
         serializer = AuthSignupSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+        user, created = User.objects.get_or_create(
+            username=serializer.data['username'], email=serializer.data['email']
+        )
         send_mail(
             'Код подтверждения для yamdb',
             f'Ваш код подтверждения - {user.confirmation_code}',
@@ -106,8 +95,29 @@ class AuthToken(APIView):
 class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
-    permission_classes = (IsAuthenticated,)
     lookup_field = 'username'
+    filter_backends = (SearchFilter,)
+    search_fields = ('username',)
+    permission_classes = (IsAuthenticated, IsAdminOrSuperUser,)
+    http_method_names = ['get', 'post', 'head', 'patch', 'delete']
+
+    @action(
+        methods=['GET', 'PATCH'],
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+        url_path='me')
+    def me_actions(self, request):
+        """ Получить/Обновить свои данные"""
+        if request.method == 'GET':
+            serializer = UsersSerializer(request.user)
+            return Response(serializer.data)
+
+        serializer = UsersSerializer(
+            request.user, data=request.data, partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save(role=request.user.role)
+        return Response(serializer.data)
 
 
 class ReviewsViewSet(viewsets.ModelViewSet):

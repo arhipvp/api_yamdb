@@ -21,7 +21,7 @@ POSSIBLE_ROLES = [
 
 class User(AbstractUser):
     username = models.CharField(unique=True, max_length=150)
-    email = models.EmailField(unique=True, max_length=254)
+    email = models.EmailField(unique=True, blank=False, null=False, max_length=254)
     first_name = models.CharField(blank=True, max_length=150)
     last_name = models.CharField(blank=True, max_length=150)
     bio = models.TextField(blank=True)

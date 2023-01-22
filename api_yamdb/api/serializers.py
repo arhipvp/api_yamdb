@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 from reviews.models import Genres, User, Title, Сategories, Review, Comment
 
@@ -12,12 +13,16 @@ class GenresSerializer(serializers.ModelSerializer):
             'url': {'lookup_field': 'slug'}
         }
 
-class СategoriesSerializer(serializers.ModelSerializer):
+
+class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Сategories
         fields = ('name', 'slug')
         lookup_field = 'slug'
-        
+        extra_kwargs = {
+            'url': {'lookup_field': 'slug'}
+        }
+
 
 class TitleSerializer(serializers.ModelSerializer):
     genre = serializers.SlugRelatedField(
@@ -29,23 +34,52 @@ class TitleSerializer(serializers.ModelSerializer):
         slug_field='slug',
         queryset=Сategories.objects.all()
     )
+
     class Meta:
         fields = '__all__'
         model = Title
 
+
 class ReadOnlyTitleSerializer(serializers.ModelSerializer):
     genre = GenresSerializer(many=True)
-    category = СategoriesSerializer()
+    category = CategoriesSerializer()
+
+
+class CategoriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Title
+        fields = '__all__'
 
 
 class AuthSignupSerializer(serializers.ModelSerializer):
+    username = serializers.RegexField("^[\w.@+-]+\Z$", max_length=150)
+    email = serializers.EmailField(required=True, max_length=254)
+
     class Meta:
         model = User
         fields = ('email', 'username')
 
+    def validate(self, data):
+        if data['username'] == 'me':
+            raise serializers.ValidationError(
+                'Использовано недопустимое имя пользователя'
+            )
+        email_user = User.objects.filter(email=data['email']).first()
+        username_user = User.objects.filter(username=data['username']).first()
+
+        if email_user and email_user.username != data['username']:
+            raise serializers.ValidationError(
+                'Email и username не соответствуют'
+            )
+        if username_user and username_user.email != data['email']:
+            raise serializers.ValidationError(
+                'Email и username не соответствуют'
+            )
+        return data
+
 
 class AuthTokenSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(required=True)
+    username = serializers.RegexField("^[\w.@+-]+\Z$", max_length=150)
     confirmation_code = serializers.CharField(required=True)
 
     class Meta:
@@ -57,6 +91,12 @@ class AuthTokenSerializer(serializers.ModelSerializer):
 
 
 class UsersSerializer(serializers.ModelSerializer):
+    username = serializers.RegexField(
+        "^[\w.@+-]+\Z$", max_length=150,
+        required=True, validators=[
+            UniqueValidator(queryset=User.objects.all())]
+    )
+
     class Meta:
         model = User
         fields = (
@@ -89,7 +129,7 @@ class CommentsSerializer(serializers.ModelSerializer):
         slug_field='username',
         read_only=True
     )
-    
+
     class Meta:
         model = Comment
         fields = ('author', 'text', 'pub_date')

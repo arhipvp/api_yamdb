@@ -1,0 +1,118 @@
+============================= test session starts =============================
+platform win32 -- Python 3.7.0, pytest-6.2.4, py-1.11.0, pluggy-0.13.1 -- c:\dev\api_yamdb\venv\scripts\python.exe
+django: settings: api_yamdb.settings (from ini)
+rootdir: C:\Dev\api_yamdb, configfile: pytest.ini, testpaths: tests/
+plugins: django-4.4.0, pythonpath-0.7.3
+collecting ... collected 77 items / 64 deselected / 13 selected
+
+tests/test_01_users.py::Test01UserAPI::test_01_users_not_authenticated PASSED [  7%]
+tests/test_01_users.py::Test01UserAPI::test_02_users_username_not_authenticated PASSED [ 15%]
+tests/test_01_users.py::Test01UserAPI::test_03_users_me_not_authenticated PASSED [ 23%]
+tests/test_02_category.py::Test02CategoryAPI::test_01_category_not_auth PASSED [ 30%]
+tests/test_02_category.py::Test02CategoryAPI::test_02_category_with_admin_user PASSED [ 38%]
+tests/test_02_category.py::Test02CategoryAPI::test_03_category_fields_validation[data0-massage0] PASSED [ 46%]
+tests/test_02_category.py::Test02CategoryAPI::test_03_category_fields_validation[data1-massage1] PASSED [ 53%]
+tests/test_02_category.py::Test02CategoryAPI::test_03_category_fields_validation[data2-massage2] PASSED [ 61%]
+tests/test_02_category.py::Test02CategoryAPI::test_04_category_delete_admin FAILED [ 69%]
+tests/test_02_category.py::Test02CategoryAPI::test_05_category_check_permission_admin FAILED [ 76%]
+tests/test_03_genre.py::Test03GenreAPI::test_03_category_fields_validation[data0-massage0] PASSED [ 84%]
+tests/test_03_genre.py::Test03GenreAPI::test_03_category_fields_validation[data1-massage1] PASSED [ 92%]
+tests/test_03_genre.py::Test03GenreAPI::test_03_category_fields_validation[data2-massage2] PASSED [100%]
+
+================================== FAILURES ===================================
+_______________ Test02CategoryAPI.test_04_category_delete_admin _______________
+
+self = <tests.test_02_category.Test02CategoryAPI object at 0x000001C91F45E208>
+admin_client = <rest_framework.test.APIClient object at 0x000001C91F443A20>
+
+    def test_04_category_delete_admin(self, admin_client):
+        category_1, category_2 = create_categories(admin_client)
+        response = admin_client.delete(
+            f'/api/v1/categories/{category_1["slug"]}/'
+        )
+        assert response.status_code == HTTPStatus.NO_CONTENT, (
+            'Проверьте, что DELETE-запрос администратора к '
+            '`/api/v1/categories/{slug}/` возвращает ответ со статусом 204.'
+        )
+        response = admin_client.get('/api/v1/categories/')
+        test_data = response.json()['results']
+        assert len(test_data) == 1, (
+            'Проверьте, что DELETE-запрос администратора к '
+            '`/api/v1/categories/{slug}/` удаляет категорию.'
+        )
+    
+        response = admin_client.get(
+            f'/api/v1/categories/{category_2["slug"]}/'
+        )
+>       assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED, (
+            'Проверьте, что GET-запросы к `/api/v1/categories/{slug}/` '
+            'запрещены и возвращают ответ со статусом 405.'
+        )
+E       AssertionError: Проверьте, что GET-запросы к `/api/v1/categories/{slug}/` запрещены и возвращают ответ со статусом 405.
+E       assert 200 == <HTTPStatus.METHOD_NOT_ALLOWED: 405>
+E         +200
+E         -<HTTPStatus.METHOD_NOT_ALLOWED: 405>
+
+tests\test_02_category.py:113: AssertionError
+__________ Test02CategoryAPI.test_05_category_check_permission_admin __________
+
+self = <tests.test_02_category.Test02CategoryAPI object at 0x000001C91F44B5F8>
+client = <django.test.client.Client object at 0x000001C91F3B5978>
+user_client = <rest_framework.test.APIClient object at 0x000001C91F3B5F60>
+moderator_client = <rest_framework.test.APIClient object at 0x000001C91F3B5BA8>
+admin_client = <rest_framework.test.APIClient object at 0x000001C91F39CCF8>
+
+    def test_05_category_check_permission_admin(self, client,
+                                                user_client,
+                                                moderator_client,
+                                                admin_client):
+        categories = create_categories(admin_client)
+        data = {
+            'name': 'Музыка',
+            'slug': 'music'
+        }
+        url = '/api/v1/categories/'
+        check_permissions(client, url, data, 'неавторизованного пользователя',
+>                         categories, HTTPStatus.UNAUTHORIZED)
+
+tests\test_02_category.py:136: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+client = <django.test.client.Client object at 0x000001C91F3B5978>
+url = '/api/v1/categories/', data = {'name': 'Музыка', 'slug': 'music'}
+user_role = 'неавторизованного пользователя'
+objects = [{'name': 'Фильм', 'slug': 'films'}, {'name': 'Книги', 'slug': 'books'}]
+expected_status = <HTTPStatus.UNAUTHORIZED: 401>
+
+    def check_permissions(client, url, data, user_role, objects,
+                          expected_status):
+        sufix = 'slug' if 'slug' in objects[0] else 'id'
+    
+        response = client.post(url, data=data)
+        assert response.status_code == expected_status, (
+>           f'Проверьте, что POST-запрос {user_role} к `{url}` возвращает ответ '
+            f'со статусом {expected_status}.'
+        )
+E       AssertionError: Проверьте, что POST-запрос неавторизованного пользователя к `/api/v1/categories/` возвращает ответ со статусом 401.
+
+tests\utils.py:138: AssertionError
+============================== warnings summary ===============================
+venv\lib\site-packages\pkg_resources\_vendor\pyparsing.py:943
+  c:\dev\api_yamdb\venv\lib\site-packages\pkg_resources\_vendor\pyparsing.py:943: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated, and in 3.8 it will stop working
+    collections.MutableMapping.register(ParseResults)
+
+venv\lib\site-packages\pkg_resources\_vendor\pyparsing.py:3226
+  c:\dev\api_yamdb\venv\lib\site-packages\pkg_resources\_vendor\pyparsing.py:3226: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated, and in 3.8 it will stop working
+    elif isinstance( exprs, collections.Iterable ):
+
+tests/test_02_category.py::Test02CategoryAPI::test_01_category_not_auth
+tests/test_02_category.py::Test02CategoryAPI::test_02_category_with_admin_user
+tests/test_02_category.py::Test02CategoryAPI::test_04_category_delete_admin
+  c:\dev\api_yamdb\venv\lib\site-packages\rest_framework\pagination.py:200: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'reviews.models.Categories'> QuerySet.
+    paginator = self.django_paginator_class(queryset, page_size)
+
+-- Docs: https://docs.pytest.org/en/stable/warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_02_category.py::Test02CategoryAPI::test_04_category_delete_admin
+FAILED tests/test_02_category.py::Test02CategoryAPI::test_05_category_check_permission_admin
+=========== 2 failed, 11 passed, 64 deselected, 5 warnings in 6.21s ===========

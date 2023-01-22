@@ -1,4 +1,6 @@
 from django.core.mail import send_mail
+from django.db.models import QuerySet
+from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -48,6 +50,16 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     lookup_field = 'slug'
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
+    @action(
+        methods=['post'],
+        detail=False,
+        permission_classes = (IsAdminOrSuperUser, )
+    )
+    def CategoryPost(self, request):
+        serializer = CategoriesSerializer(request.data)
+        if serializer.is_valid:
+            serializer.save()
+        return Response(serializer.data)
 
 class AuthSignup(APIView):
     """

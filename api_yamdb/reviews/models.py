@@ -65,7 +65,7 @@ class Genres(models.Model):
     )
 
 
-class Сategories(models.Model):
+class Categories(models.Model):
     name = models.CharField(
         max_length=256,
         null=False,
@@ -89,7 +89,7 @@ class Title(models.Model):
     description = models.TextField()
     genre = models.ManyToManyField(Genres, related_name='genres')
     category = models.ForeignKey(
-        Сategories,
+        Categories,
         on_delete=models.SET_NULL,
         null=True,
         related_name='category',

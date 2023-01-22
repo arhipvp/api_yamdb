@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from reviews.models import Genres, Title, User, Сategories, Review, Comment
+from reviews.models import Genres, Title, User, Categories, Review, Comment
 from rest_framework.decorators import action
 from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
                           GenresSerializer, TitleSerializer, UsersSerializer,
@@ -43,7 +43,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class CategoriesViewSet(viewsets.ModelViewSet):
-    queryset = Сategories.objects.all()
+    queryset = Categories.objects.all()
     serializer_class = CategoriesSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
@@ -60,6 +60,7 @@ class CategoriesViewSet(viewsets.ModelViewSet):
         if serializer.is_valid:
             serializer.save()
         return Response(serializer.data)
+
 
 class AuthSignup(APIView):
     """

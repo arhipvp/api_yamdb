@@ -31,11 +31,27 @@ class GenresViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
     
     def partial_update(self, request, slug=None):
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)        
-
-    def create(self, request):
-        if request.user.is_user:
+        if (request.user.is_user or request.user.is_moderator) and request.method == 'PATCH':
             return Response(status=status.HTTP_403_FORBIDDEN)
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)        
+    
+    def destroy(self, request, *args, **kwargs):
+        if request.user.is_user or request.user.is_moderator:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    def create(self, request, *args, **kwargs):
+        if request.user.is_user or request.user.is_moderator:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        
+        
         
         
     

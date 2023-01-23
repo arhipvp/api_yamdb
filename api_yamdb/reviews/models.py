@@ -84,7 +84,7 @@ class Title(models.Model):
         null=False,
     )
     year = models.IntegerField(
-        #validators=[MinValueValidator(1900), MaxValueValidator(2100)]
+        validators=[MinValueValidator(1900), MaxValueValidator(2100)]
     )
     description = models.TextField()
     genre = models.ManyToManyField(Genres, related_name='genres')
@@ -116,7 +116,7 @@ class Review(models.Model):
     )
     score = models.IntegerField(
         default=1,
-        #validators=[MinValueValidator(1), MaxValueValidator(10)]
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
     )
 
     class Meta:

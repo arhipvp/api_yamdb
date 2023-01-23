@@ -3,20 +3,92 @@ platform win32 -- Python 3.7.0, pytest-6.2.4, py-1.11.0, pluggy-0.13.1 -- c:\dev
 django: settings: api_yamdb.settings (from ini)
 rootdir: C:\Dev\api_yamdb, configfile: pytest.ini, testpaths: tests/
 plugins: django-4.4.0, pythonpath-0.7.3
-collecting ... collected 77 items / 72 deselected / 5 selected
+collecting ... collected 77 items
 
-tests/test_04_title.py::Test04TitleAPI::test_01_title_not_auth PASSED    [ 20%]
-tests/test_04_title.py::Test04TitleAPI::test_02_title_admin FAILED       [ 40%]
-tests/test_04_title.py::Test04TitleAPI::test_03_titles_detail FAILED     [ 60%]
-tests/test_04_title.py::Test04TitleAPI::test_04_titles_name_length_validation PASSED [ 80%]
-tests/test_04_title.py::Test04TitleAPI::test_05_titles_check_permission FAILED [100%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_00_nodata_signup PASSED [  1%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_00_invalid_data_signup PASSED [  2%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_00_singup_length_and_simbols_validation[data0-messege0] PASSED [  3%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_00_singup_length_and_simbols_validation[data1-messege1] PASSED [  5%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_00_singup_length_and_simbols_validation[data2-messege2] PASSED [  6%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_00_valid_data_user_signup PASSED [  7%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_00_valid_data_admin_create_user PASSED [  9%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_00_admin_create_user_length_and_simbols_validation[data0-messege0] PASSED [ 10%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_00_admin_create_user_length_and_simbols_validation[data1-messege1] PASSED [ 11%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_00_admin_create_user_length_and_simbols_validation[data2-messege2] PASSED [ 12%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_00_admin_create_user_length_and_simbols_validation[data3-messege3] PASSED [ 14%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_00_admin_create_user_length_and_simbols_validation[data4-messege4] PASSED [ 15%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_00_obtain_jwt_token_invalid_data PASSED [ 16%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_00_registration_me_username_restricted PASSED [ 18%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_00_registration_same_email_restricted PASSED [ 19%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_get_new_confirmation_code_for_existing_user PASSED [ 20%]
+tests/test_00_user_registration.py::Test00UserRegistration::test_get_confirmation_code_for_user_created_by_admin PASSED [ 22%]
+tests/test_01_users.py::Test01UserAPI::test_01_users_not_authenticated PASSED [ 23%]
+tests/test_01_users.py::Test01UserAPI::test_02_users_username_not_authenticated PASSED [ 24%]
+tests/test_01_users.py::Test01UserAPI::test_03_users_me_not_authenticated PASSED [ 25%]
+tests/test_01_users.py::Test01UserAPI::test_04_users_get_admin PASSED    [ 27%]
+tests/test_01_users.py::Test01UserAPI::test_04_02_users_get_search PASSED [ 28%]
+tests/test_01_users.py::Test01UserAPI::test_04_01_users_get_admin_only PASSED [ 29%]
+tests/test_01_users.py::Test01UserAPI::test_05_01_users_post_admin_bad_requests PASSED [ 31%]
+tests/test_01_users.py::Test01UserAPI::test_05_02_users_post_admin_user_creation[data0-] PASSED [ 32%]
+tests/test_01_users.py::Test01UserAPI::test_05_02_users_post_admin_user_creation[data1-без указания роли нового пользователя ] PASSED [ 33%]
+tests/test_01_users.py::Test01UserAPI::test_05_03_users_post_response_has_data PASSED [ 35%]
+tests/test_01_users.py::Test01UserAPI::test_05_04_users_post_user_superuser PASSED [ 36%]
+tests/test_01_users.py::Test01UserAPI::test_06_users_username_get_admin PASSED [ 37%]
+tests/test_01_users.py::Test01UserAPI::test_06_users_username_get_not_admin PASSED [ 38%]
+tests/test_01_users.py::Test01UserAPI::test_07_01_users_username_patch_admin PASSED [ 40%]
+tests/test_01_users.py::Test01UserAPI::test_07_02_users_username_patch_moderator PASSED [ 41%]
+tests/test_01_users.py::Test01UserAPI::test_07_03_users_username_patch_user PASSED [ 42%]
+tests/test_01_users.py::Test01UserAPI::test_07_05_users_username_put_not_allowed PASSED [ 44%]
+tests/test_01_users.py::Test01UserAPI::test_08_01_users_username_delete_admin PASSED [ 45%]
+tests/test_01_users.py::Test01UserAPI::test_08_02_users_username_delete_moderator PASSED [ 46%]
+tests/test_01_users.py::Test01UserAPI::test_08_03_users_username_delete_user PASSED [ 48%]
+tests/test_01_users.py::Test01UserAPI::test_08_04_users_username_delete_superuser PASSED [ 49%]
+tests/test_01_users.py::Test01UserAPI::test_09_users_me_get PASSED       [ 50%]
+tests/test_01_users.py::Test01UserAPI::test_09_02_users_me_delete_not_allowed PASSED [ 51%]
+tests/test_01_users.py::Test01UserAPI::test_10_01_users_me_patch PASSED  [ 53%]
+tests/test_01_users.py::Test01UserAPI::test_10_02_users_me_has_field_validation[data0-messege0] PASSED [ 54%]
+tests/test_01_users.py::Test01UserAPI::test_10_02_users_me_has_field_validation[data1-messege1] PASSED [ 55%]
+tests/test_01_users.py::Test01UserAPI::test_10_02_users_me_has_field_validation[data2-messege2] PASSED [ 57%]
+tests/test_01_users.py::Test01UserAPI::test_10_02_users_me_has_field_validation[data3-messege3] PASSED [ 58%]
+tests/test_01_users.py::Test01UserAPI::test_10_02_users_me_has_field_validation[data4-messege4] PASSED [ 59%]
+tests/test_01_users.py::Test01UserAPI::test_10_03_users_me_patch_change_role_not_allowed PASSED [ 61%]
+tests/test_02_category.py::Test02CategoryAPI::test_01_category_not_auth PASSED [ 62%]
+tests/test_02_category.py::Test02CategoryAPI::test_02_category_with_admin_user PASSED [ 63%]
+tests/test_02_category.py::Test02CategoryAPI::test_03_category_fields_validation[data0-massage0] PASSED [ 64%]
+tests/test_02_category.py::Test02CategoryAPI::test_03_category_fields_validation[data1-massage1] PASSED [ 66%]
+tests/test_02_category.py::Test02CategoryAPI::test_03_category_fields_validation[data2-massage2] PASSED [ 67%]
+tests/test_02_category.py::Test02CategoryAPI::test_04_category_delete_admin PASSED [ 68%]
+tests/test_02_category.py::Test02CategoryAPI::test_05_category_check_permission_admin PASSED [ 70%]
+tests/test_03_genre.py::Test03GenreAPI::test_01_genre_not_auth PASSED    [ 71%]
+tests/test_03_genre.py::Test03GenreAPI::test_02_genre PASSED             [ 72%]
+tests/test_03_genre.py::Test03GenreAPI::test_03_category_fields_validation[data0-massage0] PASSED [ 74%]
+tests/test_03_genre.py::Test03GenreAPI::test_03_category_fields_validation[data1-massage1] PASSED [ 75%]
+tests/test_03_genre.py::Test03GenreAPI::test_03_category_fields_validation[data2-massage2] PASSED [ 76%]
+tests/test_03_genre.py::Test03GenreAPI::test_04_genres_delete PASSED     [ 77%]
+tests/test_03_genre.py::Test03GenreAPI::test_05_genres_check_permission PASSED [ 79%]
+tests/test_04_title.py::Test04TitleAPI::test_01_title_not_auth PASSED    [ 80%]
+tests/test_04_title.py::Test04TitleAPI::test_02_title_admin FAILED       [ 81%]
+tests/test_04_title.py::Test04TitleAPI::test_03_titles_detail FAILED     [ 83%]
+tests/test_04_title.py::Test04TitleAPI::test_04_titles_name_length_validation PASSED [ 84%]
+tests/test_04_title.py::Test04TitleAPI::test_05_titles_check_permission PASSED [ 85%]
+tests/test_05_review.py::Test05ReviewAPI::test_01_review_not_auth PASSED [ 87%]
+tests/test_05_review.py::Test05ReviewAPI::test_02_review_post FAILED     [ 88%]
+tests/test_05_review.py::Test05ReviewAPI::test_03_review_detail_get PASSED [ 89%]
+tests/test_05_review.py::Test05ReviewAPI::test_04_review_detail_user FAILED [ 90%]
+tests/test_05_review.py::Test05ReviewAPI::test_05_reviews_detail_moderator_and_admin PASSED [ 92%]
+tests/test_06_comment.py::Test06CommentAPI::test_01_comment_not_auth PASSED [ 93%]
+tests/test_06_comment.py::Test06CommentAPI::test_02_comment PASSED       [ 94%]
+tests/test_06_comment.py::Test06CommentAPI::test_03_comment_detail_get PASSED [ 96%]
+tests/test_06_comment.py::Test06CommentAPI::test_04_comment_detail__user_patch_delete FAILED [ 97%]
+tests/test_06_comment.py::Test06CommentAPI::test_05_comment_detail_admin_and_moderator PASSED [ 98%]
+tests/test_06_comment.py::Test06CommentAPI::test_06_comment_detail_not_auth PASSED [100%]
 
 ================================== FAILURES ===================================
 _____________________ Test04TitleAPI.test_02_title_admin ______________________
 
-self = <tests.test_04_title.Test04TitleAPI object at 0x00000219F7687390>
-admin_client = <rest_framework.test.APIClient object at 0x00000219F7AB3080>
-client = <django.test.client.Client object at 0x00000219F7AB8438>
+self = <tests.test_04_title.Test04TitleAPI object at 0x000001829B077B38>
+admin_client = <rest_framework.test.APIClient object at 0x000001829B0F7710>
+client = <django.test.client.Client object at 0x000001829B0429B0>
 
     def test_02_title_admin(self, admin_client, client):
         genres = create_genre(admin_client)
@@ -121,9 +193,9 @@ WARNING  django.request:log.py:230 Bad Request: /api/v1/titles/
 WARNING  django.request:log.py:230 Bad Request: /api/v1/titles/
 ____________________ Test04TitleAPI.test_03_titles_detail _____________________
 
-self = <tests.test_04_title.Test04TitleAPI object at 0x00000219F7BBAD30>
-client = <django.test.client.Client object at 0x00000219F7BBA278>
-admin_client = <rest_framework.test.APIClient object at 0x00000219F7BC30F0>
+self = <tests.test_04_title.Test04TitleAPI object at 0x000001829B2240B8>
+client = <django.test.client.Client object at 0x000001829B28F358>
+admin_client = <rest_framework.test.APIClient object at 0x000001829B28F550>
 
     def test_03_titles_detail(self, client, admin_client):
         titles, categories, genres = create_titles(admin_client)
@@ -153,60 +225,345 @@ E         +'films'
 E         -{'name': 'Фильм', 'slug': 'films'}
 
 tests\test_04_title.py:199: AssertionError
-_______________ Test04TitleAPI.test_05_titles_check_permission ________________
+_____________________ Test05ReviewAPI.test_02_review_post _____________________
 
-self = <tests.test_04_title.Test04TitleAPI object at 0x00000219F7B426A0>
-client = <django.test.client.Client object at 0x00000219F7C36668>
-user_client = <rest_framework.test.APIClient object at 0x00000219F7C36048>
-moderator_client = <rest_framework.test.APIClient object at 0x00000219F7C366D8>
-admin_client = <rest_framework.test.APIClient object at 0x00000219F7C36BA8>
+self = <tests.test_05_review.Test05ReviewAPI object at 0x000001829AF17048>
+admin_client = <rest_framework.test.APIClient object at 0x000001829B28F080>
+user_client = <rest_framework.test.APIClient object at 0x000001829B28FB38>
+moderator_client = <rest_framework.test.APIClient object at 0x000001829B126898>
+admin = <User: TestAdmin>
 
-    def test_05_titles_check_permission(self, client, user_client,
-                                        moderator_client, admin_client):
-        titles, categories, genres = create_titles(admin_client)
-        url = '/api/v1/titles/'
-        data = {
-            'name': 'Зловещие мертвецы',
-            'year': 1981,
-            'genre': [genres[2]['slug'], genres[1]['slug']],
-            'category': categories[0]['slug'],
-            'description': 'This Is My Boomstick! - Ash'
-        }
-        check_permissions(client, url, data,
-                          'неавторизованного пользователя', titles,
-                          HTTPStatus.UNAUTHORIZED)
-        check_permissions(user_client, url, data,
-                          'пользователя с ролью `user`', titles,
->                         HTTPStatus.FORBIDDEN)
-
-tests\test_04_title.py:316: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-
-client = <rest_framework.test.APIClient object at 0x00000219F7C36048>
-url = '/api/v1/titles/'
-data = {'category': 'films', 'description': 'This Is My Boomstick! - Ash', 'genre': ['drama', 'comedy'], 'name': 'Зловещие мертвецы', ...}
-user_role = 'пользователя с ролью `user`'
-objects = [{'category': 'films', 'description': 'I`ll be back', 'genre': ['horror', 'comedy'], 'id': 6, ...}, {'category': 'books', 'description': 'Yippie ki yay...', 'genre': ['drama'], 'id': 7, ...}]
-expected_status = <HTTPStatus.FORBIDDEN: 403>
-
-    def check_permissions(client, url, data, user_role, objects,
-                          expected_status):
-        sufix = 'slug' if 'slug' in objects[0] else 'id'
+    def test_02_review_post(self, admin_client, user_client,
+                            moderator_client, admin):
+        titles, _, _ = create_titles(admin_client)
+        title_0_reviews_count = 0
     
-        response = client.post(url, data=data)
-        assert response.status_code == expected_status, (
->           f'Проверьте, что POST-запрос {user_role} к `{url}` возвращает ответ '
-            f'со статусом {expected_status}.'
+        data = {}
+        response = user_client.post(
+            f'/api/v1/titles/{titles[0]["id"]}/reviews/', data=data
         )
-E       AssertionError: Проверьте, что POST-запрос пользователя с ролью `user` к `/api/v1/titles/` возвращает ответ со статусом 403.
+        assert response.status_code == HTTPStatus.BAD_REQUEST, (
+            'Если POST-запрос авторизованного пользователя к '
+            '`/api/v1/titles/{title_id}/reviews/` содержит некорректные '
+            'данные - должен вернуться ответ со статусом 400.'
+        )
+    
+        post_data = {
+            'text': 'Неочень',
+            'score': 5
+        }
+        create_single_review(
+            admin_client,
+            titles[0]["id"],
+            post_data['text'],
+            post_data['score']
+        )
+        title_0_reviews_count += 1
+    
+        data = {
+            'text': 'Шляпа',
+            'score': 1
+        }
+        response = admin_client.post(
+            f'/api/v1/titles/{titles[0]["id"]}/reviews/', data=data
+        )
+        assert response.status_code == HTTPStatus.BAD_REQUEST, (
+            'Проверьте, что при попытке пользователя создать второй отзыв на '
+            'одно и то же произведение POST-запрос к '
+            '`/api/v1/titles/{title_id}/reviews/` вернёт ответ со '
+            'статусом 400.'
+        )
+    
+        try:
+            from reviews.models import Review, Title
+        except Exception as e:
+            assert False, (
+                'Не удалось импортировать модели из приложения reviews. '
+                f'Ошибка: {e}'
+            )
+        title = Title.objects.get(pk=titles[0]["id"])
+        review = None
+        try:
+            review = Review.objects.create(
+                text='Текст второго отзыва',
+                score='5',
+                author=admin,
+                title=title
+            )
+        except IntegrityError:
+            pass
+    
+        assert review is None, (
+            'Проверьте, что на уровне модели запрещено повторное '
+            'создание отзыва на произведение от имени пользователя, отзыв '
+            'которого уже существует.'
+        )
+    
+        response = admin_client.put(
+            f'/api/v1/titles/{titles[0]["id"]}/reviews/', data=data
+        )
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED, (
+            'Проверьте, что PUT-запрос авторизованного пользователя к '
+            '`/api/v1/titles/{title_id}/reviews/` возвращает ответ со '
+            'статусом 405.'
+        )
+    
+        create_single_review(user_client, titles[0]["id"], 'Ну такое', 3)
+        title_0_reviews_count += 1
+        response = create_single_review(
+            moderator_client, titles[0]["id"], 'Ниже среднего', 4
+        )
+        title_0_reviews_count += 1
+    
+        assert type(response.json().get('id')) == int, (
+            'Проверьте, что POST-запрос авторизованного пользователя к '
+            '`/api/v1/titles/{title_id}/reviews/` возвращает данные '
+            'созданного объекта. Сейчас поля `id` нет в ответе или его '
+            'значение не является целым числом.'
+        )
+    
+        data = {'text': 'На один раз', 'score': 4}
+        response = user_client.post('/api/v1/titles/999/reviews/', data=data)
+        assert response.status_code == HTTPStatus.NOT_FOUND, (
+            'Проверьте, что POST-запрос авторизованного пользователя к '
+            '`/api/v1/titles/{title_id}/reviews/` для несуществующего '
+            'произведения возвращает ответ со статусом 404.'
+        )
+    
+        data = {'text': 'Супер!', 'score': 11}
+        response = user_client.post(
+            f'/api/v1/titles/{titles[1]["id"]}/reviews/', data=data
+        )
+        assert response.status_code == HTTPStatus.BAD_REQUEST, (
+            'Если в POST-запросе авторизованного пользователя к '
+            '`/api/v1/titles/{title_id}/reviews/` передана оценка выше 10 '
+            'баллов - должен вернуться ответ со статусом 400.'
+        )
+    
+        data = {'text': 'Ужас!', 'score': 0}
+        response = user_client.post(
+            f'/api/v1/titles/{titles[0]["id"]}/reviews/', data=data
+        )
+        assert response.status_code == HTTPStatus.BAD_REQUEST, (
+            'Если в POST-запросе авторизованного пользователя к '
+            '`/api/v1/titles/{title_id}/reviews/` передана оценка ниже 1 '
+            'балла - должен вернуться ответ со статусом 400.'
+        )
+    
+        url = f'/api/v1/titles/{titles[0]["id"]}/reviews/'
+        response = user_client.get(
+            f'/api/v1/titles/{titles[0]["id"]}/reviews/'
+        )
+        assert response.status_code == HTTPStatus.OK, (
+            'Проверьте, что GET-запрос авторизованного пользователя к '
+            '`/api/v1/titles/{title_id}/reviews/` возвращает ответ со '
+            'статусом 200.'
+        )
+        data = response.json()
+        check_pagination(url, data, title_0_reviews_count)
+    
+        expected_data = {
+            'text': post_data['text'],
+            'score': post_data['score'],
+            'author': admin.username
+        }
+        review = None
+        for value in data['results']:
+            if value.get('text') == post_data['text']:
+                review = value
+        assert review, (
+            'Проверьте, что при GET-запросе к '
+            '`/api/v1/titles/{title_id}/reviews/` возвращается вся информация '
+            'об отзывах. В ответе на запрос не обнаружен текст отзыва.'
+        )
+        check_fields(
+            'review', '/api/v1/titles/{title_id}/reviews/',
+            review, expected_data
+        )
+    
+        response = admin_client.get(f'/api/v1/titles/{titles[0]["id"]}/')
+        data = response.json()
+>       assert data.get('rating') == 4, (
+            'Проверьте, что произведениям присваивается рейтинг, '
+            'равный средной оценке оставленных отзывов. '
+            'Поле `rating` не найдено в ответе на GET-запрос к '
+            '`/api/v1/titles/{titles_id}/` или содержит некорректное '
+            'значение.'
+        )
+E       AssertionError: Проверьте, что произведениям присваивается рейтинг, равный средной оценке оставленных отзывов. Поле `rating` не найдено в ответе на GET-запрос к `/api/v1/titles/{titles_id}/` или содержит некорректное значение.
+E       assert None == 4
+E         +None
+E         -4
 
-tests\utils.py:138: AssertionError
+tests\test_05_review.py:212: AssertionError
 ------------------------------ Captured log call ------------------------------
-WARNING  django.request:log.py:230 Unauthorized: /api/v1/titles/
-WARNING  django.request:log.py:230 Unauthorized: /api/v1/titles/6/
-WARNING  django.request:log.py:230 Unauthorized: /api/v1/titles/6/
--------------------------- Captured stderr teardown ---------------------------
-Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+WARNING  django.request:log.py:230 Bad Request: /api/v1/titles/10/reviews/
+WARNING  django.request:log.py:230 Bad Request: /api/v1/titles/10/reviews/
+WARNING  django.request:log.py:230 Method Not Allowed: /api/v1/titles/10/reviews/
+WARNING  django.request:log.py:230 Not Found: /api/v1/titles/999/reviews/
+WARNING  django.request:log.py:230 Bad Request: /api/v1/titles/11/reviews/
+WARNING  django.request:log.py:230 Bad Request: /api/v1/titles/10/reviews/
+_________________ Test05ReviewAPI.test_04_review_detail_user __________________
+
+self = <tests.test_05_review.Test05ReviewAPI object at 0x000001829B284160>
+admin_client = <rest_framework.test.APIClient object at 0x000001829B169C50>
+admin = <User: TestAdmin>, user = <User: TestUser>
+user_client = <rest_framework.test.APIClient object at 0x000001829AF58630>
+moderator = <User: TestModerator>
+moderator_client = <rest_framework.test.APIClient object at 0x000001829AF65630>
+
+    def test_04_review_detail_user(self, admin_client, admin, user,
+                                   user_client, moderator, moderator_client):
+        author_map = {
+            admin: admin_client,
+            user: user_client,
+            moderator: moderator_client
+        }
+        reviews, titles = create_reviews(admin_client, author_map)
+        url_template = '/api/v1/titles/{title_id}/reviews/{review_id}/'
+        new_data = {
+            'text': 'Top score',
+            'score': 10
+        }
+        response = user_client.patch(
+            f'/api/v1/titles/{titles[0]["id"]}/reviews/{reviews[1]["id"]}/',
+            data=new_data
+        )
+        assert response.status_code == HTTPStatus.OK, (
+            'Проверьте, что PATCH-запрос пользователя с ролью `user` к '
+            f'его собственному отзыву через `{url_template}` возвращает ответ '
+            'со статусом 200.'
+        )
+        data = response.json()
+        assert data.get('text') == new_data['text'], (
+            'Проверьте, что ответ на успешный PATCH-запрос к '
+            f'`{url_template}` содержит обновлённые данные отзыва. Сейчас '
+            'поле `text` не найдено или содержит некорректные данные.'
+        )
+    
+        response = user_client.get(
+            f'/api/v1/titles/{titles[0]["id"]}/reviews/{reviews[1]["id"]}/'
+        )
+        assert response.status_code == HTTPStatus.OK, (
+            'Проверьте, что GET-запрос авторизованного пользователя к '
+            f'{url_template} возвращает ответ со статусом 200.'
+        )
+        data = response.json()
+        assert_msg_template = (
+            'Проверьте, что если в PATCH-запросе авторизованного пользователя '
+            'к его собственному отзыву через `{url_template}` содержится поле '
+            '`{field}` - то это поле отзыва будет изменено.'
+        )
+        assert data.get('text') == new_data['text'], (
+            assert_msg_template.format(
+                url_template=url_template, field='text'
+            )
+        )
+        assert data.get('score') == new_data['score'], (
+            assert_msg_template.format(
+                url_template=url_template, field='score'
+            )
+        )
+    
+        response = user_client.patch(
+            f'/api/v1/titles/{titles[0]["id"]}/reviews/{reviews[2]["id"]}/',
+            data=new_data
+        )
+>       assert response.status_code == HTTPStatus.FORBIDDEN, (
+            'Проверьте, что PATCH-запрос пользователя с ролью `user` к '
+            f'чужому отзыву через `{url_template}` возвращает ответ со '
+            'статусом 403.'
+        )
+E       AssertionError: Проверьте, что PATCH-запрос пользователя с ролью `user` к чужому отзыву через `/api/v1/titles/{title_id}/reviews/{review_id}/` возвращает ответ со статусом 403.
+E       assert 200 == <HTTPStatus.FORBIDDEN: 403>
+E         +200
+E         -<HTTPStatus.FORBIDDEN: 403>
+
+tests\test_05_review.py:307: AssertionError
+_________ Test06CommentAPI.test_04_comment_detail__user_patch_delete __________
+
+self = <tests.test_06_comment.Test06CommentAPI object at 0x000001829B135358>
+admin_client = <rest_framework.test.APIClient object at 0x000001829B0DE438>
+admin = <User: TestAdmin>
+user_client = <rest_framework.test.APIClient object at 0x000001829B0B7710>
+user = <User: TestUser>
+moderator_client = <rest_framework.test.APIClient object at 0x000001829B0B7518>
+moderator = <User: TestModerator>
+
+    def test_04_comment_detail__user_patch_delete(self, admin_client, admin,
+                                                  user_client, user,
+                                                  moderator_client,
+                                                  moderator):
+        author_map = {
+            admin: admin_client,
+            user: user_client,
+            moderator: moderator_client
+        }
+        comments, reviews, titles = create_comments(admin_client, author_map)
+        url = (
+            '/api/v1/titles/{title_id}/reviews/'
+            '{review_id}/comments/{comment_id}/'
+        )
+    
+        new_data = {'text': 'Updated'}
+        response = user_client.patch(
+            url.format(
+                title_id=titles[0]['id'],
+                review_id=reviews[0]['id'],
+                comment_id=comments[1]['id']
+            ),
+            data=new_data
+        )
+        assert response.status_code == HTTPStatus.OK, (
+            'Проверьте, что PATCH-запрос авторизованного пользователя к '
+            f'его собственному комментарию через `{url}` возвращает ответ со '
+            'статусом 200.'
+        )
+        data = response.json()
+        assert data.get('text') == new_data['text'], (
+            'Проверьте, что PATCH-запрос пользователя с ролью `user` к '
+            f'его собственному комментарию через `{url}` возвращает '
+            'измененный комментарий. Сейчас поля `text` нет в ответе или оно '
+            'содержит некорректное значение.'
+        )
+    
+        response = user_client.get(
+            url.format(
+                title_id=titles[0]['id'],
+                review_id=reviews[0]['id'],
+                comment_id=comments[1]['id']
+            )
+        )
+        assert response.status_code == HTTPStatus.OK, (
+            'Проверьте, что GET-запрос авторизованного пользователя к '
+            f'`{url}` возвращает ответ со статусом 200.'
+        )
+        data = response.json()
+        assert data.get('text') == new_data['text'], (
+            'Проверьте, что PATCH-запрос пользователя с ролью `user` к его '
+            f'собственному комментарию через `{url}` изменяет этот '
+            'комментарий.'
+        )
+    
+        response = user_client.patch(
+            url.format(
+                title_id=titles[0]['id'],
+                review_id=reviews[0]['id'],
+                comment_id=comments[0]['id']
+            ),
+            data=new_data
+        )
+>       assert response.status_code == HTTPStatus.FORBIDDEN, (
+            'Проверьте, что PATCH-запрос пользователя с ролью `user` к '
+            'чужому комментарию через `{url}` возвращает ответ со статусом '
+            '403.'
+        )
+E       AssertionError: Проверьте, что PATCH-запрос пользователя с ролью `user` к чужому комментарию через `{url}` возвращает ответ со статусом 403.
+E       assert 200 == <HTTPStatus.FORBIDDEN: 403>
+E         +200
+E         -<HTTPStatus.FORBIDDEN: 403>
+
+tests\test_06_comment.py:207: AssertionError
 ============================== warnings summary ===============================
 venv\lib\site-packages\pkg_resources\_vendor\pyparsing.py:943
   c:\dev\api_yamdb\venv\lib\site-packages\pkg_resources\_vendor\pyparsing.py:943: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated, and in 3.8 it will stop working
@@ -216,14 +573,44 @@ venv\lib\site-packages\pkg_resources\_vendor\pyparsing.py:3226
   c:\dev\api_yamdb\venv\lib\site-packages\pkg_resources\_vendor\pyparsing.py:3226: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated, and in 3.8 it will stop working
     elif isinstance( exprs, collections.Iterable ):
 
+tests/test_01_users.py::Test01UserAPI::test_04_users_get_admin
+tests/test_01_users.py::Test01UserAPI::test_04_02_users_get_search
+  c:\dev\api_yamdb\venv\lib\site-packages\rest_framework\pagination.py:200: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'reviews.models.User'> QuerySet.
+    paginator = self.django_paginator_class(queryset, page_size)
+
+tests/test_02_category.py::Test02CategoryAPI::test_01_category_not_auth
+tests/test_02_category.py::Test02CategoryAPI::test_02_category_with_admin_user
+tests/test_02_category.py::Test02CategoryAPI::test_04_category_delete_admin
+  c:\dev\api_yamdb\venv\lib\site-packages\rest_framework\pagination.py:200: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'reviews.models.Categories'> QuerySet.
+    paginator = self.django_paginator_class(queryset, page_size)
+
+tests/test_03_genre.py::Test03GenreAPI::test_01_genre_not_auth
+tests/test_03_genre.py::Test03GenreAPI::test_02_genre
+tests/test_03_genre.py::Test03GenreAPI::test_04_genres_delete
+  c:\dev\api_yamdb\venv\lib\site-packages\rest_framework\pagination.py:200: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'reviews.models.Genres'> QuerySet.
+    paginator = self.django_paginator_class(queryset, page_size)
+
 tests/test_04_title.py::Test04TitleAPI::test_01_title_not_auth
 tests/test_04_title.py::Test04TitleAPI::test_02_title_admin
   c:\dev\api_yamdb\venv\lib\site-packages\rest_framework\pagination.py:200: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'reviews.models.Title'> QuerySet.
+    paginator = self.django_paginator_class(queryset, page_size)
+
+tests/test_05_review.py::Test05ReviewAPI::test_01_review_not_auth
+tests/test_05_review.py::Test05ReviewAPI::test_02_review_post
+tests/test_05_review.py::Test05ReviewAPI::test_05_reviews_detail_moderator_and_admin
+  c:\dev\api_yamdb\venv\lib\site-packages\rest_framework\pagination.py:200: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'reviews.models.Review'> QuerySet.
+    paginator = self.django_paginator_class(queryset, page_size)
+
+tests/test_06_comment.py::Test06CommentAPI::test_01_comment_not_auth
+tests/test_06_comment.py::Test06CommentAPI::test_02_comment
+  c:\dev\api_yamdb\venv\lib\site-packages\rest_framework\pagination.py:200: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'reviews.models.Comment'> QuerySet.
     paginator = self.django_paginator_class(queryset, page_size)
 
 -- Docs: https://docs.pytest.org/en/stable/warnings.html
 =========================== short test summary info ===========================
 FAILED tests/test_04_title.py::Test04TitleAPI::test_02_title_admin - Assertio...
 FAILED tests/test_04_title.py::Test04TitleAPI::test_03_titles_detail - Assert...
-FAILED tests/test_04_title.py::Test04TitleAPI::test_05_titles_check_permission
-=========== 3 failed, 2 passed, 72 deselected, 4 warnings in 3.39s ============
+FAILED tests/test_05_review.py::Test05ReviewAPI::test_02_review_post - Assert...
+FAILED tests/test_05_review.py::Test05ReviewAPI::test_04_review_detail_user
+FAILED tests/test_06_comment.py::Test06CommentAPI::test_04_comment_detail__user_patch_delete
+================= 5 failed, 72 passed, 17 warnings in 49.27s ==================

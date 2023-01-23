@@ -120,11 +120,12 @@ class Review(models.Model):
     )
 
     class Meta:
-        UniqueConstraint(
+        constraints = [
+        models.UniqueConstraint(
             fields=['author', 'title'],
             name='unique_review',
-        )
-
+            )
+        ]
     def __str__(self) -> str:
         return self.text
 

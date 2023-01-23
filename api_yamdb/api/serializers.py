@@ -1,11 +1,9 @@
+from django.http import HttpRequest
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
-
-from reviews.models import Genres, User, Title, Categories, Review, Comment
-
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
-from django.http import HttpRequest
+from rest_framework.validators import UniqueValidator
+from reviews.models import Categories, Comment, Genres, Review, Title, User
 
 
 class GenresSerializer(serializers.ModelSerializer):
@@ -27,20 +25,6 @@ class CategoriesSerializer(serializers.ModelSerializer):
             'url': {'lookup_field': 'slug'}
         }
 
-
-class TitleSerializer(serializers.ModelSerializer):
-    genre = serializers.SlugRelatedField(
-        slug_field='slug',
-        many=True,
-        queryset=Genres.objects.all()
-    )
-    category = serializers.SlugRelatedField(
-        slug_field='slug',
-        queryset=Categories.objects.all()
-    )
-    class Meta:
-        fields = '__all__'
-        model = Title
 
 
 class AuthSignupSerializer(serializers.ModelSerializer):
@@ -164,3 +148,28 @@ class CommentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('author', 'review', 'id', 'text', 'pub_date')
+
+class RatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ('score')
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    genre = serializers.SlugRelatedField(
+        slug_field='slug',
+        many=True,
+        queryset=Genres.objects.all()
+    )
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Categories.objects.all()
+    )
+    """ score = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Categories.objects.all()
+    ) """
+    class Meta:
+        fields = ('id', 'name', 'year', 'description', 'genre', 'category')
+        model = Title
+        

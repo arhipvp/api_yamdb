@@ -21,7 +21,7 @@ class IsAdminOrReadOnly(permissions.BasePermission):
     """
     Права админа или только на чтение
     """
-    def has_permission(self, request, view, obj):
+    def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
 

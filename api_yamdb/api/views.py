@@ -16,8 +16,7 @@ from reviews.models import Categories, Comment, Genres, Review, Title, User
 from .permissions import IsAdminOrReadOnly, IsAdminOrSuperUser
 from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
                           CategoriesSerializer, CommentsSerializer,
-                          GenresSerializer, ReadOnlyTitleSerializer,
-                          ReviewsSerializer, TitleSerializer, UsersSerializer)
+                          GenresSerializer, ReviewsSerializer, TitleSerializer, UsersSerializer)
 
 
 class GenresViewSet(viewsets.ModelViewSet):

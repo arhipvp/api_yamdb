@@ -33,6 +33,12 @@ class GenresViewSet(viewsets.ModelViewSet):
     def partial_update(self, request, slug=None):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)        
 
+    def create(self, request):
+        if request.user.is_user:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        
+        
+    
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()

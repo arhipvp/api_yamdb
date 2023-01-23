@@ -26,6 +26,12 @@ class GenresViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
+    
+    def retrieve(self, request, slug=None):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+    def partial_update(self, request, slug=None):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)        
 
 
 class TitleViewSet(viewsets.ModelViewSet):

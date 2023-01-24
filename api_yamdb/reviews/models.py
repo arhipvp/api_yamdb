@@ -84,7 +84,7 @@ class Title(models.Model):
         null=False,
     )
     year = models.IntegerField(
-        #validators=[ValidateYear]
+        # validators=[ValidateYear]
     )
     description = models.TextField()
     genre = models.ManyToManyField(Genres, related_name='genres')
@@ -119,10 +119,12 @@ class Review(models.Model):
     )
 
     class Meta:
-        UniqueConstraint(
-            fields=['author', 'title'],
-            name='unique_review',
-        )
+        constraints = [
+            UniqueConstraint(
+                fields=['author', 'title'],
+                name='unique_review',
+            )
+        ]
 
     def __str__(self) -> str:
         return self.text

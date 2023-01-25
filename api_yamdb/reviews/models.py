@@ -3,8 +3,6 @@ import hashlib
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.core.exceptions import ValidationError
-from .validations import ValidateYear
 from django.db.models import UniqueConstraint
 
 USER = 'user'
@@ -21,7 +19,12 @@ POSSIBLE_ROLES = [
 
 class User(AbstractUser):
     username = models.CharField(unique=True, max_length=150)
-    email = models.EmailField(unique=True, blank=False, null=False, max_length=254)
+    email = models.EmailField(
+        unique=True,
+        blank=False,
+        null=False,
+        max_length=254
+    )
     first_name = models.CharField(blank=True, max_length=150)
     last_name = models.CharField(blank=True, max_length=150)
     bio = models.TextField(blank=True)
@@ -83,9 +86,7 @@ class Title(models.Model):
         blank=False,
         null=False,
     )
-    year = models.IntegerField(
-        # validators=[ValidateYear]
-    )
+    year = models.IntegerField()
     description = models.TextField()
     genre = models.ManyToManyField(Genres, related_name='genres')
     category = models.ForeignKey(

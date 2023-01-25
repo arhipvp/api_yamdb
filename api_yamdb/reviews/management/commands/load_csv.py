@@ -34,7 +34,12 @@ class Command(BaseCommand):
         df["last_name"] = "test_lastname"
         df["bio"] = "test_bio"
         # заливаем dataframe в таблицу
-        df.to_sql(name='reviews_user', if_exists='append', index=False, con=cnx)
+        df.to_sql(
+            name='reviews_user',
+            if_exists='append',
+            index=False,
+            con=cnx,
+        )
 
         # таблица categories
         cnx.execute("DELETE FROM reviews_categories")

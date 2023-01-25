@@ -1,8 +1,15 @@
 from django.core.mail import send_mail
 from django.db.models import QuerySet
-from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+
+
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+)
+from rest_framework import filters, viewsets, status
+from rest_framework.response import Response
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
@@ -11,12 +18,14 @@ from rest_framework.permissions import (AllowAny, IsAuthenticated,
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from reviews.models import Categories, Comment, Genres, Review, Title, User
+from reviews.models import Genres, Title, User, Categories, Review, Comment
+from rest_framework.decorators import action
+from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
+                          GenresSerializer, TitleSerializer, UsersSerializer,
+                          CategoriesSerializer, ReviewsSerializer,
+                          CommentsSerializer, ReadOnlyTitleSerializer)
 
 from .permissions import IsAdminOrReadOnly, IsAdminOrSuperUser
-from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
-                          CategoriesSerializer, CommentsSerializer,
-                          GenresSerializer, ReviewsSerializer, TitleSerializer, UsersSerializer)
 
 
 class GenresViewSet(viewsets.ModelViewSet):
@@ -104,7 +113,8 @@ class AuthSignup(APIView):
         serializer = AuthSignupSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user, created = User.objects.get_or_create(
-            username=serializer.data['username'], email=serializer.data['email']
+            username=serializer.data['username'],
+            email=serializer.data['email'],
         )
         send_mail(
             'Код подтверждения для yamdb',
@@ -165,7 +175,7 @@ class UsersViewSet(viewsets.ModelViewSet):
 
 class ReviewsViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewsSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthorOrModeratorOrAdminOrSuperuser, )
 
     def get_queryset(self) -> QuerySet:
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
@@ -174,7 +184,7 @@ class ReviewsViewSet(viewsets.ModelViewSet):
 
 class CommentsViewSet(viewsets.ModelViewSet):
     serializer_class = CommentsSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthorOrModeratorOrAdminOrSuperuser, )
 
     def get_queryset(self) -> QuerySet:
         review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))

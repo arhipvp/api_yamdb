@@ -24,7 +24,7 @@ cd api_yamdb
 
 Cоздать и активировать виртуальное окружение:
 
-```python
+```bash
 python -m venv venv
 ```
 
@@ -32,7 +32,7 @@ python -m venv venv
 source venv/bin/activate
 ```
 
-```python
+```bash
 python -m pip install --upgrade pip
 ```
 
@@ -44,13 +44,18 @@ pip install -r requirements.txt
 
 Выполнить миграции:
 
-```python
+```bash
 python manage.py migrate
+```
+
+Загрузить тестовые данные
+```bash
+python manage.py load_csv
 ```
 
 Запустить проект:
 
-```python
+```bash
 python manage.py runserver
 ```
 

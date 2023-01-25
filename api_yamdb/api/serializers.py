@@ -29,16 +29,10 @@ class CategoriesSerializer(serializers.ModelSerializer):
         }
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    genre = serializers.SlugRelatedField(
-        slug_field='slug',
-        many=True,
-        queryset=Genres.objects.all()
-    )
-    category = serializers.SlugRelatedField(
-        slug_field='slug',
-        queryset=Categories.objects.all()
-    )
+class TitleSerializerRead(serializers.ModelSerializer):
+    """Сериализатор для работы с title при LIST/RETRIEVE."""
+    category = CategoriesSerializer(read_only=True)
+    genre = GenresSerializer(many=True, read_only=True)
     rating = serializers.SerializerMethodField()
 
     class Meta:
@@ -47,6 +41,23 @@ class TitleSerializer(serializers.ModelSerializer):
 
     def get_rating(self, obj):
         return obj.reviews.aggregate(Avg('score')).get('score__avg')
+
+
+class TitleSerializerCreate(serializers.ModelSerializer):
+    """Сериализатор для работы с title при POST/PUT/PATCH."""
+    category = serializers.SlugRelatedField(
+        queryset=Categories.objects.all(),
+        slug_field='slug'
+    )
+    genre = serializers.SlugRelatedField(
+        queryset=Genres.objects.all(),
+        slug_field='slug',
+        many=True
+    )
+
+    class Meta:
+        fields = '__all__'
+        model = Title
 
 
 class AuthSignupSerializer(serializers.ModelSerializer):
@@ -127,8 +138,8 @@ class ReviewsSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if self.context.get('request').method == 'POST':
             if Review.objects.filter(
-                title=self.get_title(self),
-                author=self.get_author(self),
+                    title=self.get_title(self),
+                    author=self.get_author(self),
             ).exists():
                 raise ValidationError(
                     'На одно произведение можно оставить только один отзыв',

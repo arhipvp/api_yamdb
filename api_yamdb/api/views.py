@@ -7,22 +7,26 @@ from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import (AllowAny, IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+                                        IsAuthenticatedOrReadOnly, )
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from reviews.models import Categories, Genres, Review, Title, User
 
-from .permissions import IsAdminOrReadOnly, IsAdminOrSuperUser
+from .permissions import IsAdminOrReadOnly, IsAdminOrSuperUser, \
+    IsAuthorOrModeratorOrAdminOrSuperuser
 from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
                           CategoriesSerializer, CommentsSerializer,
-                          GenresSerializer, ReviewsSerializer, TitleSerializer, UsersSerializer)
+                          GenresSerializer, ReviewsSerializer,
+                          TitleSerializerCreate, TitleSerializerRead,
+                          UsersSerializer)
+from .filters import TitleFilter
 
 
 class GenresViewSet(viewsets.ModelViewSet):
     queryset = Genres.objects.all()
     serializer_class = GenresSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -31,9 +35,10 @@ class GenresViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def partial_update(self, request, slug=None):
-        if (request.user.is_user or request.user.is_moderator) and request.method == 'PATCH':
+        if (
+                request.user.is_user or request.user.is_moderator) and request.method == 'PATCH':
             return Response(status=status.HTTP_403_FORBIDDEN)
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)        
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def destroy(self, request, *args, **kwargs):
         if request.user.is_user or request.user.is_moderator:
@@ -49,13 +54,21 @@ class GenresViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    serializer_class = TitleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    serializer_class = TitleSerializerCreate
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitleFilter
+
+    def get_serializer_class(self):
+        if self.request.method in ('POST', 'PATCH', 'DELETE',):
+            return TitleSerializerCreate
+        return TitleSerializerRead
 
     def create(self, request, *args, **kwargs):
         if request.user.is_user or request.user.is_moderator:
@@ -64,14 +77,15 @@ class TitleViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
 
     def partial_update(self, request, *args, **kwargs):
         if request.user.is_user or request.user.is_moderator:
             return Response(status=status.HTTP_403_FORBIDDEN)
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
-    
+
     def destroy(self, request, *args, **kwargs):
         if request.user.is_user or request.user.is_moderator:
             return Response(status=status.HTTP_403_FORBIDDEN)
@@ -163,9 +177,10 @@ class UsersViewSet(viewsets.ModelViewSet):
         serializer.save(role=request.user.role)
         return Response(serializer.data)
 
+
 class ReviewsViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewsSerializer
-    permission_classes = (IsAuthorOrModeratorOrAdminOrSuperuser, )
+    permission_classes = (IsAuthorOrModeratorOrAdminOrSuperuser,)
 
     def get_queryset(self) -> QuerySet:
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
@@ -174,7 +189,7 @@ class ReviewsViewSet(viewsets.ModelViewSet):
 
 class CommentsViewSet(viewsets.ModelViewSet):
     serializer_class = CommentsSerializer
-    permission_classes = (IsAuthorOrModeratorOrAdminOrSuperuser, )
+    permission_classes = (IsAuthorOrModeratorOrAdminOrSuperuser,)
 
     def get_queryset(self) -> QuerySet:
         review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
@@ -184,13 +199,10 @@ class CommentsViewSet(viewsets.ModelViewSet):
 # всё что ниже задвоилось
 
 
-
-
 from django.core.mail import send_mail
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-
 
 from rest_framework.permissions import (
     IsAuthenticated,
@@ -204,7 +216,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from reviews.models import Genres, Title, User, Categories, Review
 from rest_framework.decorators import action
 from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
-                          GenresSerializer, TitleSerializer, UsersSerializer,
+                          GenresSerializer, UsersSerializer,
                           CategoriesSerializer, ReviewsSerializer,
                           CommentsSerializer)
 
@@ -218,40 +230,26 @@ from .permissions import (
 class GenresViewSet(viewsets.ModelViewSet):
     queryset = Genres.objects.all()
     serializer_class = GenresSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-    
+
     def retrieve(self, request, slug=None):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-    
+
     def partial_update(self, request, slug=None):
-        if (request.user.is_user or request.user.is_moderator) and request.method == 'PATCH':
+        if (
+                request.user.is_user or request.user.is_moderator) and request.method == 'PATCH':
             return Response(status=status.HTTP_403_FORBIDDEN)
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)        
-    
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
     def destroy(self, request, *args, **kwargs):
         if request.user.is_user or request.user.is_moderator:
             return Response(status=status.HTTP_403_FORBIDDEN)
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
-    def create(self, request, *args, **kwargs):
-        if request.user.is_user or request.user.is_moderator:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
-class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
-    serializer_class = TitleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
 
     def create(self, request, *args, **kwargs):
         if request.user.is_user or request.user.is_moderator:
@@ -260,21 +258,37 @@ class TitleViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
 
-    def partial_update(self, request, *args, **kwargs):
-        if request.user.is_user or request.user.is_moderator:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        kwargs['partial'] = True
-        return self.update(request, *args, **kwargs)
-    
-    def destroy(self, request, *args, **kwargs):
-        if request.user.is_user or request.user.is_moderator:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
+# class TitleViewSet(viewsets.ModelViewSet):
+#     queryset = Title.objects.all()
+#     serializer_class = TitleSerializer
+#     permission_classes = (IsAuthenticatedOrReadOnly,)
+#
+#     def create(self, request, *args, **kwargs):
+#         if request.user.is_user or request.user.is_moderator:
+#             return Response(status=status.HTTP_403_FORBIDDEN)
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         self.perform_create(serializer)
+#         headers = self.get_success_headers(serializer.data)
+#         return Response(serializer.data, status=status.HTTP_201_CREATED,
+#                         headers=headers)
+#
+#     def partial_update(self, request, *args, **kwargs):
+#         if request.user.is_user or request.user.is_moderator:
+#             return Response(status=status.HTTP_403_FORBIDDEN)
+#         kwargs['partial'] = True
+#         return self.update(request, *args, **kwargs)
+#
+#     def destroy(self, request, *args, **kwargs):
+#         if request.user.is_user or request.user.is_moderator:
+#             return Response(status=status.HTTP_403_FORBIDDEN)
+#         instance = self.get_object()
+#         self.perform_destroy(instance)
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CategoriesViewSet(viewsets.ModelViewSet):
@@ -284,7 +298,7 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     search_fields = ('name',)
     lookup_field = 'slug'
     permission_classes = (IsAuthenticatedOrReadOnly, IsAdminOrReadOnly,)
-        
+
     def create(self, request, *args, **kwargs):
         if request.user.is_user or request.user.is_moderator:
             return Response(status=status.HTTP_403_FORBIDDEN)
@@ -292,7 +306,8 @@ class CategoriesViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
 
     def retrieve(self, request, slug=None):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)

@@ -1,11 +1,11 @@
 import hashlib
 
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.core.exceptions import ValidationError
-from .validations import ValidateYear
 from django.db.models import UniqueConstraint
+
 
 USER = 'user'
 MODERATOR = 'moderator'
@@ -84,7 +84,7 @@ class Title(models.Model):
         null=False,
     )
     year = models.IntegerField(
-        # validators=[ValidateYear]
+        validators=[MinValueValidator(1900), MaxValueValidator(2100)]
     )
     description = models.TextField()
     genre = models.ManyToManyField(Genres, related_name='genres')
@@ -115,6 +115,7 @@ class Review(models.Model):
         auto_now_add=True,
     )
     score = models.IntegerField(
+        default=1,
         validators=[MinValueValidator(1), MaxValueValidator(10)]
     )
 

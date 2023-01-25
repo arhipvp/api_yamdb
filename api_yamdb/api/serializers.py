@@ -44,11 +44,6 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
 
 
-class ReadOnlyTitleSerializer(serializers.ModelSerializer):
-    genre = GenresSerializer(many=True)
-    category = CategoriesSerializer()
-
-
 class AuthSignupSerializer(serializers.ModelSerializer):
     username = serializers.RegexField("^[\w.@+-]+\Z$", max_length=150)
     email = serializers.EmailField(required=True, max_length=254)

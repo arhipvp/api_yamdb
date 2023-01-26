@@ -10,10 +10,12 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
+        if (
+            request.method in permissions.SAFE_METHODS
+            or obj.owner == request.user
+        ):
+        
             return True
-
-        return obj.owner == request.user
 
 
 class IsAdminOrReadOnly(permissions.BasePermission):
@@ -39,11 +41,7 @@ class IsAdminOrSuperUser(permissions.BasePermission):
             or request.user.is_superuser
         )
 
-    def has_object_permission(self, request, view, obj):
-        return (
-            request.user.is_admin
-            or request.user.is_superuser
-        )
+
 
 
 class IsAuthorOrModeratorOrAdminOrSuperuser(permissions.BasePermission):

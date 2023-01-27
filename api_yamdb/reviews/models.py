@@ -53,8 +53,18 @@ class User(AbstractUser):
     def confirmation_code(self):
         return hashlib.md5(self.username.encode()).hexdigest()
 
-
-class Genres(models.Model):
+class Categories(models.Model):
+    name = models.CharField(
+        max_length=256,
+        null=False,
+        blank=False,
+    )
+    slug = models.SlugField(
+        max_length=50,
+        unique=True,
+    )
+    
+class Genre(models.Model):
     name = models.CharField(
         max_length=128,
         unique=True,
@@ -66,20 +76,7 @@ class Genres(models.Model):
         blank=True,
         max_length=50,
     )
-
-
-class Categories(models.Model):
-    name = models.CharField(
-        max_length=256,
-        null=False,
-        blank=False,
-    )
-    slug = models.SlugField(
-        max_length=50,
-        unique=True,
-    )
-
-
+    
 class Title(models.Model):
     name = models.CharField(
         max_length=256,
@@ -88,13 +85,18 @@ class Title(models.Model):
     )
     year = models.IntegerField()
     description = models.TextField()
-    genre = models.ManyToManyField(Genres, related_name='genres')
+    genre = models.ManyToManyField(Genre, related_name='genres')
     category = models.ForeignKey(
         Categories,
         on_delete=models.SET_NULL,
         null=True,
         related_name='category',
     )
+
+
+
+
+
 
 
 class Review(models.Model):
@@ -150,3 +152,4 @@ class Comment(models.Model):
 
     def __str__(self) -> str:
         return self.text
+

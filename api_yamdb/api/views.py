@@ -10,7 +10,7 @@ from rest_framework.permissions import (IsAuthenticated,
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from reviews.models import Categories, Genres, Review, Title, User
+from reviews.models import Categories, Genre, Review, Title, User
 
 from .permissions import IsAdminOrReadOnly, IsAdminOrSuperUser, \
     IsAuthorOrModeratorOrAdminOrSuperuser
@@ -20,10 +20,10 @@ from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
                           TitleSerializerCreate, TitleSerializerRead,
                           UsersSerializer)
 from .filters import TitleFilter
-
+from django.db.models import Avg
 
 class GenresViewSet(viewsets.ModelViewSet):
-    queryset = Genres.objects.all()
+    queryset = Genre.objects.all()
     serializer_class = GenresSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
@@ -61,7 +61,7 @@ class GenresViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.all().annotate(Avg('reviews__score')).order_by('id')
     serializer_class = TitleSerializerCreate
     permission_classes = (IsAuthenticatedOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
@@ -70,6 +70,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.request.method in ('POST', 'PATCH', 'DELETE',):
             return TitleSerializerCreate
+        #self.queryset = Title.objects.get(slug=self.request['slug']).annotate(Avg("reviews__score")).get('score__avg')
         return TitleSerializerRead
 
     def create(self, request, *args, **kwargs):
@@ -196,10 +197,11 @@ class UsersViewSet(viewsets.ModelViewSet):
 class ReviewsViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewsSerializer
     permission_classes = (IsAuthorOrModeratorOrAdminOrSuperuser,)
-
-    def get_queryset(self) -> QuerySet:
+    
+    def get_queryset(self):
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
-        return title.reviews.select_related('title')
+
+        return title.reviews.all()
 
 
 class CommentsViewSet(viewsets.ModelViewSet):

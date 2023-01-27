@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from django.db.models import Avg
 
-from reviews.models import Genres, User, Title, Categories, Review, Comment
+from reviews.models import Genre, User, Title, Categories, Review, Comment
 
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
@@ -11,8 +11,8 @@ from django.http import HttpRequest
 
 class GenresSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Genres
-        fields = ('name', 'slug')
+        model = Genre
+        exclude = ['id', ]
         lookup_field = 'slug'
         extra_kwargs = {
             'url': {'lookup_field': 'slug'}
@@ -33,14 +33,14 @@ class TitleSerializerRead(serializers.ModelSerializer):
     """Сериализатор для работы с title при LIST/RETRIEVE."""
     category = CategoriesSerializer(read_only=True)
     genre = GenresSerializer(many=True, read_only=True)
-    rating = serializers.SerializerMethodField()
+    #rating = serializers.SerializerMethodField()
 
     class Meta:
         fields = '__all__'
         model = Title
 
-    def get_rating(self, obj):
-        return obj.reviews.aggregate(Avg('score')).get('score__avg')
+    #def get_rating(self, obj):
+     #   return obj.reviews.aggregate(Avg('score')).get('score__avg')
 
 
 class TitleSerializerCreate(serializers.ModelSerializer):
@@ -50,7 +50,7 @@ class TitleSerializerCreate(serializers.ModelSerializer):
         slug_field='slug'
     )
     genre = serializers.SlugRelatedField(
-        queryset=Genres.objects.all(),
+        queryset=Genre.objects.all(),
         slug_field='slug',
         many=True
     )

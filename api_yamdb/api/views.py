@@ -1,27 +1,28 @@
+import re
+
 from django.core.mail import send_mail
-from django.db.models import QuerySet
+from django.db.models import Avg, QuerySet
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import (IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly, )
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from reviews.models import Categories, Genre, Review, Title, User
 
-from .permissions import IsAdminOrReadOnly, IsAdminOrSuperUser, \
-    IsAuthorOrModeratorOrAdminOrSuperuser
+from .filters import TitleFilter
+from .permissions import (IsAdminOrReadOnly, IsAdminOrSuperUser,
+                          IsAuthorOrModeratorOrAdminOrSuperuser)
 from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
                           CategoriesSerializer, CommentsSerializer,
                           GenresSerializer, ReviewsSerializer,
                           TitleSerializerCreate, TitleSerializerRead,
                           UsersSerializer)
-from .filters import TitleFilter
-from django.db.models import Avg
-import re
+
 
 class GenresViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
@@ -201,8 +202,14 @@ class ReviewsViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
-
         return title.reviews.all()
+    
+    def perform_create(self, serializer):
+        serializer.save(
+            author=self.request.user,
+            title=get_object_or_404(Title, id=self.kwargs.get('title_id'))
+        )
+
 
 
 class CommentsViewSet(viewsets.ModelViewSet):
@@ -212,3 +219,13 @@ class CommentsViewSet(viewsets.ModelViewSet):
     def get_queryset(self) -> QuerySet:
         review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
         return review.comments.select_related('review')
+
+    def perform_create(self, serializer):
+        serializer.save(
+            author=self.request.user,
+            review = get_object_or_404(
+                Review,
+                id = self.kwargs.get('review_id'),
+                title = self.kwargs.get('title_id'),
+            )
+        )

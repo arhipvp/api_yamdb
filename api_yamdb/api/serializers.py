@@ -142,12 +142,7 @@ class ReviewsSerializer(serializers.ModelSerializer):
                 )
         return data
 
-    def create(self, validated_data):
-        return Review.objects.create(
-            title=self.get_title(self),
-            author=self.get_author(self),
-            **validated_data,
-        )
+
 
     class Meta:
         model = Review
@@ -164,15 +159,7 @@ class CommentsSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
-    def create(self, validated_data):
-        return Comment.objects.create(
-            review=get_object_or_404(
-                Review,
-                pk=self.context.get('view').kwargs.get('review_id'),
-            ),
-            author=self.context.get('request').user,
-            **validated_data,
-        )
+
 
     class Meta:
         model = Comment

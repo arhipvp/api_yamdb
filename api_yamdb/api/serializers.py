@@ -1,12 +1,10 @@
-from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
 from django.db.models import Avg
-
-from reviews.models import Genre, User, Title, Categories, Review, Comment
-
+from django.http import HttpRequest
+from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
-from django.http import HttpRequest
+from rest_framework.validators import UniqueValidator
+from reviews.models import Categories, Comment, Genre, Review, Title, User
 
 
 class GenresSerializer(serializers.ModelSerializer):
@@ -33,14 +31,14 @@ class TitleSerializerRead(serializers.ModelSerializer):
     """Сериализатор для работы с title при LIST/RETRIEVE."""
     category = CategoriesSerializer(read_only=True)
     genre = GenresSerializer(many=True, read_only=True)
-    #rating = serializers.SerializerMethodField()
-
+    rating = serializers.IntegerField(
+        source='reviews__score__avg', read_only=True
+    )
+    
     class Meta:
         fields = '__all__'
         model = Title
 
-    #def get_rating(self, obj):
-     #   return obj.reviews.aggregate(Avg('score')).get('score__avg')
 
 
 class TitleSerializerCreate(serializers.ModelSerializer):
@@ -69,7 +67,7 @@ class AuthSignupSerializer(serializers.ModelSerializer):
         fields = ('email', 'username')
 
     def validate(self, data):
-        if data['username'] == 'me':
+        if data['username'] in ('me', 'ME', 'Me', 'mE'):
             raise serializers.ValidationError(
                 'Использовано недопустимое имя пользователя'
             )
@@ -125,11 +123,9 @@ class ReviewsSerializer(serializers.ModelSerializer):
     )
 
     def get_author(self, request: HttpRequest) -> User:
-        del request
         return self.context.get('request').user
 
     def get_title(self, request: HttpRequest) -> Title:
-        del request
         return get_object_or_404(
             Title,
             pk=self.context.get('view').kwargs.get('title_id'),

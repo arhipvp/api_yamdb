@@ -21,6 +21,7 @@ from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
                           UsersSerializer)
 from .filters import TitleFilter
 from django.db.models import Avg
+import re
 
 class GenresViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
@@ -70,7 +71,6 @@ class TitleViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.request.method in ('POST', 'PATCH', 'DELETE',):
             return TitleSerializerCreate
-        #self.queryset = Title.objects.get(slug=self.request['slug']).annotate(Avg("reviews__score")).get('score__avg')
         return TitleSerializerRead
 
     def create(self, request, *args, **kwargs):
@@ -179,7 +179,8 @@ class UsersViewSet(viewsets.ModelViewSet):
         methods=['GET', 'PATCH'],
         detail=False,
         permission_classes=(IsAuthenticated,),
-        url_path='me')
+        url_path='me',
+    )
     def me_actions(self, request):
         """ Получить/Обновить свои данные"""
         if request.method == 'GET':

@@ -63,19 +63,19 @@ class Command(BaseCommand):
                   con=cnx)
 
         # таблица genre
-        cnx.execute("DELETE FROM reviews_genres")
+        cnx.execute("DELETE FROM reviews_genre")
         path = finders.find('data/genre.csv')
         df = pd.read_csv(path)
         df.drop_duplicates(subset=['id'], inplace=True)
         df.dropna(subset=['id'], inplace=True)
-        df.to_sql(name='reviews_genres', if_exists='append', index=False,
+        df.to_sql(name='reviews_genre', if_exists='append', index=False,
                   con=cnx)
 
         # таблица genre_title
         cnx.execute("DELETE FROM reviews_title_genre")
         path = finders.find('data/genre_title.csv')
         df = pd.read_csv(path)
-        df.rename(columns={"genre_id": "genres_id"}, inplace=True)
+        df.rename(columns={"genre_id": "genre_id"}, inplace=True)
         df.drop_duplicates(subset=['id'], inplace=True)
         df.dropna(subset=['id'], inplace=True)
         df.to_sql(name='reviews_title_genre', if_exists='append', index=False,

@@ -59,7 +59,7 @@ class User(AbstractUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
-class Categories(models.Model):
+class Category(models.Model):
     name = models.CharField(
         max_length=256,
         null=False,
@@ -103,7 +103,7 @@ class Title(models.Model):
     description = models.TextField(verbose_name='Описание')
     genre = models.ManyToManyField(Genre, related_name='genres', verbose_name='Жанры')
     category = models.ForeignKey(
-        Categories,
+        Category,
         on_delete=models.SET_NULL,
         null=True,
         related_name='category',

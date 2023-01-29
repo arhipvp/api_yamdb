@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.validators import UniqueValidator
-from reviews.models import Categories, Comment, Genre, Review, Title, User
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
 
 class GenresSerializer(serializers.ModelSerializer):
@@ -17,9 +17,9 @@ class GenresSerializer(serializers.ModelSerializer):
         }
 
 
-class CategoriesSerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Categories
+        model = Category
         fields = ('name', 'slug')
         lookup_field = 'slug'
         extra_kwargs = {
@@ -29,7 +29,7 @@ class CategoriesSerializer(serializers.ModelSerializer):
 
 class TitleSerializerRead(serializers.ModelSerializer):
     """Сериализатор для работы с title при LIST/RETRIEVE."""
-    category = CategoriesSerializer(read_only=True)
+    category = CategorySerializer(read_only=True)
     genre = GenresSerializer(many=True, read_only=True)
     rating = serializers.IntegerField(
         source='reviews__score__avg', read_only=True
@@ -44,7 +44,7 @@ class TitleSerializerRead(serializers.ModelSerializer):
 class TitleSerializerCreate(serializers.ModelSerializer):
     """Сериализатор для работы с title при POST/PUT/PATCH."""
     category = serializers.SlugRelatedField(
-        queryset=Categories.objects.all(),
+        queryset=Category.objects.all(),
         slug_field='slug'
     )
     genre = serializers.SlugRelatedField(

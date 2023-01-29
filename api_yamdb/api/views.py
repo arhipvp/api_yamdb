@@ -11,14 +11,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
-from reviews.models import Categories, Genre, Review, Title, User
+from reviews.models import Category, Genre, Review, Title, User
 
 from .filters import TitleFilter
 from .permissions import (IsAdminOrReadOnly, IsAdminOrSuperUser,
                           IsAuthorOrModeratorOrAdminOrSuperuser,
                           IsSuperUserOrReadOnly)
 from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
-                          CategoriesSerializer, CommentsSerializer,
+                          CategorySerializer, CommentsSerializer,
                           GenresSerializer, ReviewsSerializer,
                           TitleSerializerCreate, TitleSerializerRead,
                           UsersSerializer)
@@ -97,9 +97,9 @@ class TitleViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class CategoriesViewSet(viewsets.ModelViewSet):
-    queryset = Categories.objects.all()
-    serializer_class = CategoriesSerializer
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'

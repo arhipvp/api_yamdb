@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
+from .validators import my_year_validator
 
 USER = 'user'
 MODERATOR = 'moderator'
@@ -97,9 +98,10 @@ class Title(models.Model):
         max_length=256,
         blank=False,
         null=False,
+        db_index=True,
         verbose_name='Название произведения'
     )
-    year = models.IntegerField(verbose_name='Гоп производства')
+    year = models.IntegerField(verbose_name='Гоп производства', validators=[my_year_validator], )
     description = models.TextField(verbose_name='Описание')
     genre = models.ManyToManyField(Genre, related_name='genres', verbose_name='Жанры')
     category = models.ForeignKey(

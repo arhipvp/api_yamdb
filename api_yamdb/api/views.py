@@ -22,7 +22,7 @@ from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
                           GenresSerializer, ReviewsSerializer,
                           TitleSerializerCreate, TitleSerializerRead,
                           UsersSerializer)
-
+from api_yamdb.settings import ADMIN_EMAIL
 
 class GenresViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet, ): 
     queryset = Genre.objects.all() 
@@ -134,13 +134,13 @@ class AuthSignup(APIView):
         serializer = AuthSignupSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user, created = User.objects.get_or_create(
-            username=serializer.data['username'],
-            email=serializer.data['email'],
+            username=serializer.validated_data['username'],
+            email=serializer.validated_data['email'],
         )
         send_mail(
             'Код подтверждения для yamdb',
             f'Ваш код подтверждения - {user.confirmation_code}',
-            'from@example.com',
+            ADMIN_EMAIL,
             [user.email],
             fail_silently=False,
         )

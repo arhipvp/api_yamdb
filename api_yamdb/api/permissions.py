@@ -17,6 +17,14 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         
             return True
 
+class IsSuperUserOrReadOnly(permissions.BasePermission):
+    """
+    Права SuperUser или только на чтение
+    """
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return request.user.is_superuser
 
 class IsAdminOrReadOnly(permissions.BasePermission):
     """

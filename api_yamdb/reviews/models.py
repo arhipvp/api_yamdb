@@ -140,7 +140,7 @@ class Review(models.Model):
         auto_now_add=True,
     )
     score = models.IntegerField(verbose_name='Рейтинг',
-        validators=[MinValueValidator(1), MaxValueValidator(10)]
+        validators=[MinValueValidator(1, 'Не может быть меньше 1'), MaxValueValidator(10, 'Не может быть больше 10')]
     )
 
     class Meta:
@@ -152,6 +152,7 @@ class Review(models.Model):
         ]
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
+        ordering = ['-pub_date']
 
     def __str__(self) -> str:
         return self.text

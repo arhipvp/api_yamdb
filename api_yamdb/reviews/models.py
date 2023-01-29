@@ -103,12 +103,12 @@ class Title(models.Model):
     )
     year = models.IntegerField(verbose_name='Гоп производства', validators=[my_year_validator], )
     description = models.TextField(verbose_name='Описание')
-    genre = models.ManyToManyField(Genre, related_name='genres', verbose_name='Жанры')
+    genre = models.ManyToManyField(Genre, related_name='titles', verbose_name='Жанры')
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='category',
+        related_name='titles',
         verbose_name='Категория'
     )
     class Meta:

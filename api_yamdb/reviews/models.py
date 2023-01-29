@@ -19,16 +19,26 @@ POSSIBLE_ROLES = [
 
 
 class User(AbstractUser):
-    username = models.CharField(unique=True, max_length=150, verbose_name='Имя пользователя')
+    username = models.CharField(
+        unique=True, max_length=150,
+        verbose_name='Имя пользователя',
+    )
     email = models.EmailField(
         unique=True,
         blank=False,
         null=False,
         max_length=254,
-        verbose_name='Электронная почта'
+        verbose_name='Электронная почта',
     )
-    first_name = models.CharField(blank=True, max_length=150, verbose_name='Имя')
-    last_name = models.CharField(blank=True, max_length=150, verbose_name='Фамилия')
+    first_name = models.CharField(
+        blank=True, max_length=150,
+        verbose_name='Имя',
+    )
+    last_name = models.CharField(
+        blank=True,
+        max_length=150,
+        verbose_name='Фамилия',
+    )
     bio = models.TextField(blank=True, verbose_name='Наверное это биография:)')
     role = models.CharField(
         choices=POSSIBLE_ROLES,
@@ -55,10 +65,11 @@ class User(AbstractUser):
     @property
     def confirmation_code(self):
         return hashlib.md5(self.username.encode()).hexdigest()
-    
+
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
 
 class Category(models.Model):
     name = models.CharField(
@@ -72,10 +83,12 @@ class Category(models.Model):
         unique=True,
         verbose_name='Slug'
     )
+
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
-    
+
+
 class Genre(models.Model):
     name = models.CharField(
         max_length=128,
@@ -89,10 +102,12 @@ class Genre(models.Model):
         max_length=50,
         verbose_name='Slug'
     )
+
     class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
-    
+
+
 class Title(models.Model):
     name = models.CharField(
         max_length=256,
@@ -101,24 +116,27 @@ class Title(models.Model):
         db_index=True,
         verbose_name='Название произведения'
     )
-    year = models.IntegerField(verbose_name='Гоп производства', validators=[my_year_validator], )
+    year = models.IntegerField(
+        verbose_name='Гоп производства',
+        validators=[my_year_validator],
+    )
     description = models.TextField(verbose_name='Описание')
-    genre = models.ManyToManyField(Genre, related_name='titles', verbose_name='Жанры')
+    genre = models.ManyToManyField(
+        Genre,
+        related_name='titles',
+        verbose_name='Жанры',
+    )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
         null=True,
         related_name='titles',
-        verbose_name='Категория'
+        verbose_name='Категория',
     )
+
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
-
-
-
-
-
 
 
 class Review(models.Model):
@@ -139,8 +157,12 @@ class Review(models.Model):
         verbose_name='Дата публикации',
         auto_now_add=True,
     )
-    score = models.IntegerField(verbose_name='Рейтинг',
-        validators=[MinValueValidator(1, 'Не может быть меньше 1'), MaxValueValidator(10, 'Не может быть больше 10')]
+    score = models.IntegerField(
+        verbose_name='Рейтинг',
+        validators=[
+            MinValueValidator(1, 'Не может быть меньше 1'),
+            MaxValueValidator(10, 'Не может быть больше 10'),
+        ]
     )
 
     class Meta:
@@ -179,6 +201,7 @@ class Comment(models.Model):
 
     def __str__(self) -> str:
         return self.text
+
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'

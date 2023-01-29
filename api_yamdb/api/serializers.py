@@ -1,4 +1,3 @@
-from django.db.models import Avg
 from django.http import HttpRequest
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -34,11 +33,10 @@ class TitleSerializerRead(serializers.ModelSerializer):
     rating = serializers.IntegerField(
         source='reviews__score__avg', read_only=True
     )
-    
+
     class Meta:
         fields = '__all__'
         model = Title
-
 
 
 class TitleSerializerCreate(serializers.ModelSerializer):
@@ -142,8 +140,6 @@ class ReviewsSerializer(serializers.ModelSerializer):
                 )
         return data
 
-
-
     class Meta:
         model = Review
         fields = ('author', 'title', 'id', 'text', 'pub_date', 'score')
@@ -158,8 +154,6 @@ class CommentsSerializer(serializers.ModelSerializer):
         slug_field='username',
         read_only=True
     )
-
-
 
     class Meta:
         model = Comment

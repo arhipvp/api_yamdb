@@ -12,6 +12,8 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from reviews.models import Category, Genre, Review, Title, User
 
+from api_yamdb.settings import ADMIN_EMAIL
+
 from .filters import TitleFilter
 from .permissions import (IsAdminOrReadOnly, IsAdminOrSuperUser,
                           IsAuthorOrModeratorOrAdminOrSuperuser)
@@ -20,7 +22,6 @@ from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
                           GenresSerializer, ReviewsSerializer,
                           TitleSerializerCreate, TitleSerializerRead,
                           UsersSerializer)
-from api_yamdb.settings import ADMIN_EMAIL
 
 
 class GenresViewSet(mixins.ListModelMixin,
@@ -62,7 +63,9 @@ class GenresViewSet(mixins.ListModelMixin,
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all().annotate(Avg('reviews__score')).order_by('id')
+    queryset = Title.objects.all().annotate(
+        Avg('reviews__score')
+    ).order_by('id')
     serializer_class = TitleSerializerCreate
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
@@ -183,9 +186,9 @@ class CommentsViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(
             author=self.request.user,
-            review = get_object_or_404(
+            review=get_object_or_404(
                 Review,
-                id = self.kwargs.get('review_id'),
-                title = self.kwargs.get('title_id'),
+                id=self.kwargs.get('review_id'),
+                title=self.kwargs.get('title_id'),
             )
         )

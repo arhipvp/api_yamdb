@@ -1,6 +1,7 @@
 from typing import Any
 
 from django.http import HttpRequest
+
 from rest_framework import permissions, viewsets
 
 
@@ -10,12 +11,10 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        if (
+        return (
             request.method in permissions.SAFE_METHODS
             or obj.owner == request.user
-        ):
-
-            return True
+        )
 
 
 class IsSuperUserOrReadOnly(permissions.BasePermission):
@@ -33,18 +32,9 @@ class IsAdminOrReadOnly(permissions.BasePermission):
     Права админа или только на чтение
     """
     def has_permission(self, request, view):
-        if request.user.is_authenticated:
-            return (
-                request.method in permissions.SAFE_METHODS
-                or request.user.is_admin
-            )
-        return request.method in permissions.SAFE_METHODS
-
-    def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-
-        return request.user.is_admin
+        return (request.method in permissions.SAFE_METHODS
+                or (request.user.is_authenticated
+                    and request.user.is_admin))
 
 
 class IsAdminOrSuperUser(permissions.BasePermission):

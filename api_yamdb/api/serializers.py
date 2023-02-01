@@ -1,4 +1,5 @@
 from django.http import HttpRequest
+
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
@@ -65,7 +66,7 @@ class AuthSignupSerializer(serializers.ModelSerializer):
         fields = ('email', 'username')
 
     def validate(self, data):
-        if data['username'] in ('me', 'ME', 'Me', 'mE'):
+        if data['username'].lower() == 'me':
             raise serializers.ValidationError(
                 'Использовано недопустимое имя пользователя'
             )

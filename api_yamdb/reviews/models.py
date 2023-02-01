@@ -5,7 +5,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 
-from .validators import my_year_validator
+from .validators import YearValidator
 
 USER = 'user'
 MODERATOR = 'moderator'
@@ -119,7 +119,7 @@ class Title(models.Model):
     )
     year = models.IntegerField(
         verbose_name='Гоп производства',
-        validators=[my_year_validator],
+        validators=[YearValidator],
     )
     description = models.TextField(verbose_name='Описание')
     genre = models.ManyToManyField(

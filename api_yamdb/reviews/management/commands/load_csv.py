@@ -1,9 +1,10 @@
-import pandas as pd
+import datetime
+import sqlite3
+
 from django.contrib.staticfiles import finders
 from django.core.management.base import BaseCommand
 
-import sqlite3
-import datetime
+import pandas as pd
 
 
 class Command(BaseCommand):

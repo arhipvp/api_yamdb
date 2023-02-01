@@ -37,8 +37,6 @@ class IsAdminOrReadOnly(permissions.BasePermission):
                     and request.user.is_admin))
 
 
-
-
 class IsAdminOrSuperUser(permissions.BasePermission):
     """
     Права админа или суперюзера системы

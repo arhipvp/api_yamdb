@@ -6,8 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import (IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -112,7 +111,9 @@ class UsersViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     filter_backends = (SearchFilter,)
     search_fields = ('username',)
-    permission_classes = (IsAuthenticated, IsAdminOrSuperUser,) 
+    permission_classes = (IsAuthenticated, IsAdminOrSuperUser,)
+
+    """данная строка запрещает метод put, который не разрешён документацией"""
     http_method_names = ['get', 'post', 'head', 'patch', 'delete']
 
     @action(

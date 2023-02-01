@@ -135,6 +135,8 @@ class UsersViewSet(viewsets.ModelViewSet):
     filter_backends = (SearchFilter,)
     search_fields = ('username',)
     permission_classes = (IsAuthenticated, IsAdminOrSuperUser,)
+
+    """данная строка запрещает метод put, который не разрешён документацией"""
     http_method_names = ['get', 'post', 'head', 'patch', 'delete']
 
     @action(
@@ -183,9 +185,9 @@ class CommentsViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(
             author=self.request.user,
-            review = get_object_or_404(
+            review=get_object_or_404(
                 Review,
-                id = self.kwargs.get('review_id'),
-                title = self.kwargs.get('title_id'),
+                id=self.kwargs.get('review_id'),
+                title=self.kwargs.get('title_id'),
             )
         )

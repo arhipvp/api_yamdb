@@ -66,7 +66,7 @@ class AuthSignupSerializer(serializers.ModelSerializer):
         fields = ('email', 'username')
 
     def validate(self, data):
-        if data['username'] in ('me', 'ME', 'Me', 'mE'):
+        if data['username'].lower() == 'me':
             raise serializers.ValidationError(
                 'Использовано недопустимое имя пользователя'
             )

@@ -3,6 +3,7 @@ from django.urls import include, path
 from api.views import (AuthSignup, AuthToken, CategoryViewSet, CommentsViewSet,
                        GenresViewSet, ReviewsViewSet, TitleViewSet,
                        UsersViewSet)
+
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()

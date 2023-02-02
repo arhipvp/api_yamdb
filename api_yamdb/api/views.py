@@ -24,10 +24,14 @@ from .serializers import (AuthSignupSerializer, AuthTokenSerializer,
                           UsersSerializer)
 
 
-class GenresViewSet(mixins.ListModelMixin,
-                    mixins.CreateModelMixin,
-                    mixins.DestroyModelMixin,
-                    viewsets.GenericViewSet,):
+class CRDViewSet(mixins.ListModelMixin,
+                 mixins.CreateModelMixin,
+                 mixins.DestroyModelMixin,
+                 viewsets.GenericViewSet):
+    pass
+
+
+class GenresViewSet(CRDViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenresSerializer
     permission_classes = (IsAdminOrReadOnly,)
@@ -51,10 +55,7 @@ class TitleViewSet(viewsets.ModelViewSet):
         return TitleSerializerRead
 
 
-class CategoryViewSet(mixins.ListModelMixin,
-                      mixins.CreateModelMixin,
-                      mixins.DestroyModelMixin,
-                      viewsets.GenericViewSet):
+class CategoryViewSet(CRDViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)

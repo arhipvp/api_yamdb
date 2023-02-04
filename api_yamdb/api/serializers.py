@@ -4,11 +4,6 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.validators import UniqueValidator
-
-"""я пользуюсь isort начиная со второго спринта.
-Почему-то он сортирует (автоматом) именно так. Как его кастомизировать не
-разобрался. Поправил вручную везде.Заранее извиняюсь, если isort все
-опять испортит"""
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
 
